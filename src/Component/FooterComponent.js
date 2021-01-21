@@ -1,5 +1,6 @@
 import React from 'react';
 
+//Defines Footer of the Page
 
 function Footer(props) {
     return(

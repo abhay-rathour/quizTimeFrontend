@@ -2,6 +2,9 @@ import React, { Component} from 'react';
 import { Navbar, Nav, NavbarToggler,NavItem, Collapse,Jumbotron} from 'reactstrap';
 import { MDBBtn } from "mdbreact";
 import { NavLink } from 'react-router-dom';
+
+//Navigation Bar Component of the page
+
 class NavComp extends Component{
     constructor(props) {
         super(props);
@@ -16,6 +19,8 @@ class NavComp extends Component{
         });
     }
     render(){
+        //If user is signed in  displaying his Navbar containing options to see tests, results and his own information
+
         if(this.props.authenticated){
             return(
                 <Navbar expand className="juicy-peach-gradient">                  
@@ -44,6 +49,11 @@ class NavComp extends Component{
             </Navbar> 
             );
         }
+
+
+        //Else displaying normal Navigation bar containing home, demo, about us and contact us
+
+
         else{
             return(
                 <Navbar expand className="juicy-peach-gradient">                  
@@ -80,14 +90,20 @@ class NavComp extends Component{
         }
     }
 }
+
+//Login Part of Header 
+
+
 class LoginPart extends Component{
     
     render(){
-        if(this.props.authenticated){
+        //If logged in , Diplay UserName and Logout button
+
+        if(this.props.authenticated.isAuthenticated){
             return(
                 <div className="row align-items-center">
                     <div className=" white-text col-sm-2 ml-auto justify-contents-right">
-                       <h4>Utkarsh</h4>
+                       <h4>Abhay </h4>
                     </div>
                     <div className="col-sm-2 justify-contents-left">
                         <MDBBtn gradient="young-passion" size="sm">LogOut</MDBBtn>
@@ -95,6 +111,9 @@ class LoginPart extends Component{
                 </div>
             );
         }
+
+        //Else Display Form to login
+
         else{
             return(
                 <div className="row"> 
@@ -117,6 +136,7 @@ class LoginPart extends Component{
         }
     }
 }
+//Defines Header and Navigation Bar
 
 class Header extends Component {
 
@@ -131,7 +151,7 @@ class Header extends Component {
                                 <img className="rounded-circle" src="assets/images/logo.jpg" height="80" width="80" alt="Quiz Time" />
                             </div>
                             <div className="col-12 col-sm-1 mr-auto">
-                               <h2 className="white-text">Quiz Time</h2> 
+                               <h1 className="white-text ">Quiz Time</h1> 
                             </div>
                             <div className="col-12 col-sm-6">
                              <LoginPart authenticated= {this.props.authenticated}/>   

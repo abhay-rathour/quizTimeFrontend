@@ -2,10 +2,14 @@ import React, { Component ,Fragment} from 'react';
 import {MDBBtn } from 'mdbreact';
 import { Link } from 'react-router-dom';
 
+//Home Component contains display and links provided on Home page
+
 class Home extends Component {
     render() {
         return (
             <>
+                {/* Register Now part of home page */}
+                
                 <div className="container">
                     <div className="row align-items-center backgroundPhoto">
                             <div className="col-12 col-md-4 mr-auto text-center">
@@ -19,6 +23,9 @@ class Home extends Component {
                             </div>
                     </div>
                 </div>
+
+                {/* Text Information section of Homepage */}
+
                 <div className="container purple-text">
                     <div className="row justify-content-center" >
                         <strong><h2>Online Exam Builder</h2></strong>
@@ -30,8 +37,7 @@ class Home extends Component {
                                 </p>
                         <strong><h2>Why use our online examination tool?</h2></strong>
                         <p>
-                            Do you need some serious testing software for your students? Or do you need to hand out a lot
-                            of certificates? Do you want to easily set up your exam software and invite your
+                            Do you need some serious testing software for your students? Or Do you want to easily set up your exam software and invite your
                             participants, or do you need to connect your testing software with your internal software?
                             Start using the Online Exam Builder and this is all within reach. Take a look at all the
                             features and solutions.
