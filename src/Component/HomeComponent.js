@@ -16,6 +16,9 @@ class Home extends Component {
                                 <h2 className="font-weight-bold font-italic light-blue-text">Online Quiz</h2>
                                 <p className="indigo-text font-weight-bold">Give and Take quizes nice and Easy!!!</p>
                             </div>
+
+                            {/* Button to Register Now  */}
+                            
                             <div className="col-12 col-md-3 ml-auto">
                                 <Fragment className="col-sm-2">
                                 <Link to ="/register" ><MDBBtn gradient="purple" size="m">Register Now</MDBBtn></Link>

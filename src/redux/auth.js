@@ -3,7 +3,7 @@
 
 
 export const Auth = (state={
-    isAuthenticated: true,
+    isAuthenticated: false,
     isadmin: false,
 },action)=>{
     switch(action.type){

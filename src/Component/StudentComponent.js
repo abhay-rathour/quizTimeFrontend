@@ -4,7 +4,9 @@ import { MDBBtn } from 'mdbreact';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 
-const Student = (props) => {
+// Student Component to display The signed in Students List of oending tests and previous tests 
+
+const Student = () => {
     const [activeTab, setActiveTab] = useState('1');
 
     const toggle = tab => {
@@ -13,6 +15,10 @@ const Student = (props) => {
 
     return (
         <div className="container mt-5">
+
+            {/* A Navigation Tab to switch between old tests and new ones */}
+
+
             <Nav tabs>
                 <NavItem>
                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
@@ -25,6 +31,9 @@ const Student = (props) => {
                         </NavLink>
                 </NavItem>
             </Nav>
+
+            {/* Contents of both tabs */}
+
             <TabContent activeTab={activeTab}>
                 <TabPane tabId="1">
                     <Row>
@@ -59,6 +68,8 @@ const Student = (props) => {
                         </Col>
                     </Row>
                 </TabPane>
+
+
                 <TabPane tabId="2">
                     <Row>
                         <Col sm="12">
@@ -79,7 +90,7 @@ const Student = (props) => {
                                         <td>Maths</td>
                                         <td>00:60:00</td>
                                         <td>50
-                                        <Link to="/exam" ><MDBBtn gradient="aqua" size="sm">Test</MDBBtn></Link>
+                                            <Link to="/exam" ><MDBBtn gradient="aqua" size="sm">Test</MDBBtn></Link>
                                         </td>
                                     </tr>
                                     <tr>
@@ -88,7 +99,7 @@ const Student = (props) => {
                                         <td>Science</td>
                                         <td>00:60:00</td>
                                         <td>50
-                                        <Link to="/exam" ><MDBBtn gradient="aqua" size="sm">Test</MDBBtn></Link>
+                                            <Link to="/exam" ><MDBBtn gradient="aqua" size="sm">Test</MDBBtn></Link>
                                         </td>
                                     </tr>
                                 </tbody>

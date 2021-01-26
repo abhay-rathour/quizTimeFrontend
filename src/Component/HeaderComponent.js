@@ -19,9 +19,10 @@ class NavComp extends Component{
         });
     }
     render(){
+
         //If user is signed in  displaying his Navbar containing options to see tests, results and his own information
 
-        if(this.props.authenticated){
+        if(this.props.authenticated.isAuthenticated){
             return(
                 <Navbar expand className="juicy-peach-gradient">                  
                 <div className="container">
@@ -106,7 +107,7 @@ class LoginPart extends Component{
                        <h4>Abhay </h4>
                     </div>
                     <div className="col-sm-2 justify-contents-left">
-                        <MDBBtn gradient="young-passion" size="sm">LogOut</MDBBtn>
+                        <MDBBtn gradient="young-passion" size="sm"> LogOut </MDBBtn>
                     </div>
                 </div>
             );
@@ -136,6 +137,8 @@ class LoginPart extends Component{
         }
     }
 }
+
+
 //Defines Header and Navigation Bar
 
 class Header extends Component {
@@ -147,19 +150,33 @@ class Header extends Component {
                 <Jumbotron className = "sunny-morning-gradient">
                     <div className="container">
                         <div className="row row-header align-items-center">
+                            
+                            {/* Adding Logo of Website */}
+
                             <div className="col-12 col-sm-2 ">
                                 <img className="rounded-circle" src="assets/images/logo.jpg" height="80" width="80" alt="Quiz Time" />
                             </div>
+
+                            {/* Name of the Website */}
+
                             <div className="col-12 col-sm-1 mr-auto">
                                <h1 className="white-text ">Quiz Time</h1> 
                             </div>
+
+                            {/* Rendering Login part of Right Half of Header */}
+
                             <div className="col-12 col-sm-6">
                              <LoginPart authenticated= {this.props.authenticated}/>   
                             </div>
                         </div>
                     </div>
                 </Jumbotron>
+
+                {/* Showing Header Just Below The Header */}
+
                 <NavComp authenticated= {this.props.authenticated}/>   
+
+                
             </div>
       );
     }

@@ -7,7 +7,10 @@ function Footer(props) {
     <div className="frozen-dreams-gradient mt-auto">
         <div className="container">
             <div className = "row align-self-end">
-            <div className="row justify-content-center">             
+            <div className="row justify-content-center">
+
+                {/* Features Know How Menu */}
+
                 <div className="col-6 offset-lg-1 col-lg-1">
                     <h5>Our Products:-</h5>
                     <ul className="list-unstyled">
@@ -16,6 +19,9 @@ function Footer(props) {
                         <li><a href="####">Quizes</a></li>
                     </ul>
                 </div>
+
+                {/* About Us Menu */}
+
                 <div className="col-6 offset-lg-1 col-lg-2">
                     <h5>About Us:-</h5>
                     <ul className="list-unstyled">
@@ -25,6 +31,9 @@ function Footer(props) {
                         <li><a href="####">Terms and Conditions</a></li>
                     </ul>
                 </div>
+
+                {/* Support Menu */}
+
                 <div className="col-6 offset-lg-1 col-lg-2">
                     <h5>Help Support:-</h5>
                     <ul className="list-unstyled">
@@ -34,6 +43,9 @@ function Footer(props) {
                         <li><a href="####">Chat Support</a></li>
                     </ul>
                 </div>
+
+                {/* Social Links Corner */}
+
                 <div className="col-12 col-sm-4 align-self-center">
                     <div className="text-center">
                         <a className="btn btn-social-icon btn-google" href="http://google.com/+"><i className="fa fa-google-plus"></i></a>
