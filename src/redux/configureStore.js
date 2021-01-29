@@ -1,5 +1,5 @@
 import {createStore, combineReducers, applyMiddleware}  from 'redux';
-import {Tests } from './TestAction';
+import {Test, Tests } from './TestAction';
 import {Auth} from './auth';
 import thunk from 'redux-thunk';
 import logger from 'redux-logger';
@@ -9,6 +9,7 @@ export const ConfigureStore = ()=>{
         combineReducers({
             tests: Tests,
             auth:Auth,
+            test: Test,
 
         }),
         applyMiddleware(thunk,logger)

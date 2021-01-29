@@ -3,8 +3,8 @@
 
 
 export const Auth = (state={
-    isAuthenticated: false,
-    isadmin: false,
+    isAuthenticated: true,
+    isAdmin: false,
 },action)=>{
     switch(action.type){
         default:

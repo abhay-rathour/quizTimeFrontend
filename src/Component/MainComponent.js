@@ -13,6 +13,7 @@ import Home from './HomeComponent';
 import Student from './StudentComponent';
 import Exam from './ExamComponent';
 import Register from './RegisterComponent';
+import Admin from './AdminComponent';
 
 
 //Adding Redux store with Main State
@@ -39,22 +40,32 @@ class Main extends Component {
         // this.props.fetchTests();
     }
     render(){
-
+        const IsAuth = this.props.auth.isAuthenticated;
 
         // Homepage Component which returns normal homepage when Not logged in otherwise it displays My Tests section of Logged in user
 
         const HomePage = () => {
             if(this.props.auth.isAuthenticated)
             {
-            
-                return(
-                    <Redirect to={'/student'}/>
-                );
+                if(this.props.auth.isAdmin)
+                {
+                    return(
+                        <Redirect to={'/admin'}/>
+                    );
+                }
+                else{
+
+                    return(
+                        <Redirect to={'/student'}/>
+                    );
+                }
+                
+
             }
             else
             {
                 return(
-                    <Home/>
+                    <Redirect to={'/'}/>
                 );
             }
           }
@@ -69,9 +80,22 @@ class Main extends Component {
                     {/* Defines Route path to all components */}
                
                 <Switch>
-                    <Route path="/home" component = {HomePage}/>
-                    <Route path="/register" component={Register} />
+                    <Route path="/"  exact component = {()=>{
+                        if(IsAuth){
+                            return(
+                                <Redirect to ='/home'/>
+                            )    
+                        }
+                        else{
+                            return(
+                                <Home/>
+                            )
+                        }
+                    }}/>
+                    <Route path="/home" exact component = {HomePage}/>
+                    <Route path="/register" exact component={Register} />
                     <Route path="/student" component={Student} />
+                    <Route path="/admin" component={Admin} />
                     <Route path="/exam" component={Exam}/>
                     <Redirect to ="/home" />
                 </Switch>
