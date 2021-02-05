@@ -4,7 +4,7 @@
 
 export const Auth = (state={
     isAuthenticated: true,
-    isAdmin: false,
+    isAdmin: true,
 },action)=>{
     switch(action.type){
         default:

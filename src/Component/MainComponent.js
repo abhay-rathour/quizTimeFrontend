@@ -14,7 +14,8 @@ import Student from './StudentComponent';
 import Exam from './ExamComponent';
 import Register from './RegisterComponent';
 import Admin from './AdminComponent';
-
+import CreateTest from './CreateTestComponent';
+import GroupDetail from './GroupDetailComponent';
 
 //Adding Redux store with Main State
 
@@ -97,6 +98,8 @@ class Main extends Component {
                     <Route path="/student" component={Student} />
                     <Route path="/admin" component={Admin} />
                     <Route path="/exam" component={Exam}/>
+                    <Route path="/createtest" component={CreateTest}/>
+                    <Route path="/groupdetail" component={GroupDetail}/>
                     <Redirect to ="/home" />
                 </Switch>
                
