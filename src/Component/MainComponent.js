@@ -16,6 +16,8 @@ import Register from './RegisterComponent';
 import Admin from './AdminComponent';
 import CreateTest from './CreateTestComponent';
 import GroupDetail from './GroupDetailComponent';
+import {loginUser,logoutUser} from '../redux/ActionCreators/LoginActions';
+import {adminRegistration,userRegistration}   from '../redux/ActionCreators/RegisterActions';
 
 //Adding Redux store with Main State
 
@@ -28,6 +30,11 @@ const mapStateToProps = state=>{
 
 const mapDispatchToProps = (dispatch)=>({
     // fetchTests: ()=>{dispatch(fetchTests())}
+    loginUser: (creds) => dispatch(loginUser(creds)),
+    logoutUser: () => dispatch(logoutUser()),
+    adminRegistration: (user)=>dispatch(adminRegistration(user)),
+    userRegistration: (user)=>dispatch(userRegistration(user)),
+    
 });
 
 
@@ -76,7 +83,8 @@ class Main extends Component {
         return(
             <div className="Body">
                    
-                <Header authenticated={this.props.auth}/>
+                <Header authenticated={this.props.auth} loginUser={this.props.loginUser} 
+          logoutUser={this.props.logoutUser}/>
                
                     {/* Defines Route path to all components */}
                
@@ -94,8 +102,8 @@ class Main extends Component {
                         }
                     }}/>
                     <Route path="/home" exact component = {HomePage}/>
-                    <Route path="/register" exact component={Register} />
-                    <Route path="/student" component={Student} />
+                    <Route path="/register" exact><Register userRegistration={this.props.userRegistration} adminRegistration={this.props.adminRegistration}/></Route>
+                    <Route path="/student">{!IsAuth?<Redirect to="/"/>:<Student/>}</Route> 
                     <Route path="/admin" component={Admin} />
                     <Route path="/exam" component={Exam}/>
                     <Route path="/createtest" component={CreateTest}/>

@@ -201,7 +201,7 @@ const GroupDetail = (props) => {
 
                         </Col>
                     </Row>
-
+                    <Link to="/createtest" ><MDBBtn gradient="aqua" size="sm"> Create a New </MDBBtn></Link>
                 </TabPane>
                 <TabPane tabId="5">
                     <Row>

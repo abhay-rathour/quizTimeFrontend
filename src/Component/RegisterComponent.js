@@ -19,7 +19,8 @@ class Register extends Component {
             lastname: '',
             email: '',
             password: '',
-            agree: false
+            agree: false,
+            userType:''
         };
 
         //Medthod Definitions to handle the various actions during filling the form
@@ -27,7 +28,8 @@ class Register extends Component {
         this.toggleModal1 = this.toggleModal1.bind(this);
         this.toggleModal2 = this.toggleModal2.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSubmitAdmins = this.handleSubmitAdmins.bind(this);
+        this.handleSubmitUsers = this.handleSubmitUsers.bind(this);
 
     }
 
@@ -35,7 +37,8 @@ class Register extends Component {
 
     toggleModal1() {
         this.setState({
-            isModal1Open: !this.state.isModal1Open
+            isModal1Open: !this.state.isModal1Open,
+            userType:'users'
         });
     }
 
@@ -43,7 +46,8 @@ class Register extends Component {
 
     toggleModal2() {
         this.setState({
-            isModal2Open: !this.state.isModal2Open
+            isModal2Open: !this.state.isModal2Open,
+            userType:'admins'
         });
     }
 
@@ -61,9 +65,34 @@ class Register extends Component {
 
     //A Submit Button to submit all the data entered during registration form to and send it to Server-side to Complete the process
 
-    handleSubmit(event) {
+    handleSubmitAdmins(event) {
         // console.log('Current State is: ' + JSON.stringify(this.state));
-        alert('Current State is: ' + JSON.stringify(this.state));
+        // alert('Current State is: ' + JSON.stringify(this.state));
+        this.toggleModal2();
+        var user={
+            firstName: this.state.firstname,
+            lastName: this.state.lastname,
+            username: this.state.username,
+            email : this.state.email,
+            password: this.state.password
+        };
+        this.props.adminRegistration(user);
+       
+        event.preventDefault();
+    }
+    handleSubmitUsers(event) {
+        // console.log('Current State is: ' + JSON.stringify(this.state));
+        // alert('Current State is: ' + JSON.stringify(this.state));
+        this.toggleModal1();
+        var user={
+            firstName: this.state.firstname,
+            lastName: this.state.lastname,
+            username: this.state.username,
+            email : this.state.email,
+            password: this.state.password
+        };
+        this.props.userRegistration(user);
+        
         event.preventDefault();
     }
 
@@ -99,7 +128,7 @@ class Register extends Component {
                 <Modal isOpen={this.state.isModal1Open} toggle={this.toggleModal1}>
                     <ModalHeader toggle={this.toggleModal1}><strong>Sign up  free Student Account</strong></ModalHeader>
                     <ModalBody >
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form onSubmit={this.handleSubmitUsers}>
                             <FormGroup row>
                                 <Col md={10}>
                                     <Input type="text" id="reg_code" name="reg_code"
@@ -140,7 +169,7 @@ class Register extends Component {
                             </FormGroup>
                             <FormGroup row>
                                 <Col md={10}>
-                                    <Input type="text" id="password" name="password"
+                                    <Input type="password" id="password" name="password"
                                         placeholder="Create Password"
                                         value={this.state.password}
                                         onChange={this.handleInputChange} />
@@ -162,7 +191,7 @@ class Register extends Component {
                 <Modal isOpen={this.state.isModal2Open} toggle={this.toggleModal2}>
                     <ModalHeader toggle={this.toggleModal2}><strong>Sign up for Administrator Account</strong></ModalHeader>
                     <ModalBody >
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form onSubmit={this.handleSubmitAdmins}>
                             <FormGroup row>
                                 <Col md={10}>
                                     <Input type="text" id="username" name="username"
@@ -195,7 +224,7 @@ class Register extends Component {
                             </FormGroup>
                             <FormGroup row>
                                 <Col md={10}>
-                                    <Input type="text" id="password" name="password"
+                                    <Input type="password" id="password" name="password"
                                         placeholder="Create Password"
                                         value={this.state.password}
                                         onChange={this.handleInputChange} />

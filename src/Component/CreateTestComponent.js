@@ -182,11 +182,11 @@ class CreateTest extends Component {
                         <FormGroup row>
                             <Label htmlFor="start_date" md={2}>Tentative Test Date </Label>
                             <Col md={10}>
-                                <Input type="date" id="start_date" name="start_date" placeholder="Tentative Start Date" value={this.state.start_date} onChange={this.handleInputChange} />
+                                <Input type="datetime-local" id="start_date" name="start_date" placeholder="Tentative Start Date" value={this.state.start_date} onChange={this.handleInputChange} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Button type="submit" color="primary">Create</Button>
+                            <Button disabled={(this.state.isTestInitialised)} type="submit" color="primary">Create</Button>
                         </FormGroup>
                     </Form>
 
