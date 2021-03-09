@@ -24,7 +24,6 @@ import AdminSummary from './AdminSummaryComponent';
 
 const mapStateToProps = (state)=>({
         auth: state.auth,
-        groups:state.groups
 });
 
 const mapDispatchToProps = (dispatch)=>({
@@ -52,23 +51,6 @@ export const PrivateRoute = ({component: Component, ...rest}) => (
 // Defines the whole front page and combines everything together
 
 class Main extends Component {
-    componentDidMount(){
-        if(this.props.auth.isAuthenticated)
-        {
-            console.log("Going to fetch Groups: ")
-            console.log(this.props.auth);
-            if(this.props.auth.isAdmin)
-            {
-                this.props.fetchGroups('admins')
-
-            }
-            else
-            {
-                this.props.fetchGroups('users')
-            }
-        }
-
-    }
     render(){
         const IsAuth = this.props.auth.isAuthenticated;
 

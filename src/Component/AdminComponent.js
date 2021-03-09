@@ -4,10 +4,9 @@ import { MDBBtn} from 'mdbreact';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
-import {createGroup,acceptMember,removeReq,removeMem,joinGroup,createTest}from '../redux/ActionCreators/GroupActions.js';
+import {createGroup,acceptMember,removeReq,removeMem,joinGroup,createTest,fetchGroups}from '../redux/ActionCreators/GroupActions.js';
 
 const mapStateToProps = state=>({
-        tests: state.tests,
         auth: state.auth,
         groups:state.groups,
 });
@@ -17,7 +16,8 @@ const mapDispatchToProps = (dispatch)=>({
     removeReq:(groupId,requestId)=>dispatch(removeReq(groupId,requestId)),
     removeMem:(groupId,memberId)=>dispatch(removeMem(groupId,memberId)),
     joinGroup:(groupId,request)=>dispatch(joinGroup(groupId,request)),
-    createTest:(groupId,test)=>dispatch(createTest(groupId,test))
+    createTest:(groupId,test)=>dispatch(createTest(groupId,test)),
+    fetchGroups:(type)=>dispatch(fetchGroups(type))
 });
 
 
@@ -86,6 +86,9 @@ class Admin extends Component {
         event.preventDefault();
     }
     componentDidMount(){
+                this.props.fetchGroups('admins')
+
+          
     }
 
     render(){

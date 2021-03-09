@@ -4,14 +4,15 @@ import { MDBBtn } from 'mdbreact';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import{connect} from 'react-redux'
-import {joinGroup}from '../redux/ActionCreators/GroupActions';
+import {joinGroup,fetchGroups}from '../redux/ActionCreators/GroupActions';
 
 const mapStateToProps = state=>({
     groups:state.groups,
 });
 
 const mapDispatchToProps=(dispatch)=>({
-joinGroup:(groupId,req)=>dispatch(joinGroup(groupId,req))
+joinGroup:(groupId,req)=>dispatch(joinGroup(groupId,req)),
+fetchGroups:(access)=>dispatch(fetchGroups(access))
 
 })
 // Student Component to display The signed in Students List of oending tests and previous tests 
@@ -30,6 +31,9 @@ class Student extends Component{
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleJoinGroup = this.handleJoinGroup.bind(this);
         this.toggleTab = this.toggleTab.bind(this); 
+    }
+    componentDidMount(){
+        this.props.fetchGroups('users')
     }
     toggleTab(tab) {
         if (this.state.activeTab !== tab) {
