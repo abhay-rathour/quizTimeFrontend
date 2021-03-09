@@ -20,9 +20,9 @@ class Home extends Component {
                             {/* Button to Register Now  */}
                             
                             <div className="col-12 col-md-3 ml-auto">
-                                <Fragment className="col-sm-2">
+                                {/* <div className="col-sm-5"> */}
                                 <Link to ="/register" ><MDBBtn gradient="purple" size="m">Register Now</MDBBtn></Link>
-                                </Fragment>
+                                {/* </div> */}
                             </div>
                     </div>
                 </div>

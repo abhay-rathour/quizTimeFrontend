@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { Button, Col,  Label, Input, Form, FormGroup, Card, CardHeader, CardBody } from 'reactstrap';
-
+import {connect} from 'react-redux';
+import{createTest}from '../redux/ActionCreators/GroupActions'
+const mapDispatchToProps=(dispatch)=>({
+    createTest:(groupId,test)=>dispatch(createTest(groupId,test))
+})
 
 function RenderQuestions(props) {
     if (!props.isTestInitialised) {
@@ -15,16 +19,16 @@ function RenderQuestions(props) {
         if (props.test.questions.length) {
             questiondisplay = props.test.questions.map((question) => {
                 return (
-                    <li key={question.number} className="col-12 m-5">
-                        <h4> <b>{question.number}.&ensp;</b>
+                    <li key={question.questionNo} className="col-12 m-5">
+                        <h4> <b>{question.questionNo}.&ensp;</b>
                             {question.question}
                         </h4>
                         <ul className="list-unstyled">
-                            <li>A. &emsp;{question.option1}  </li>
-                            <li>B. &emsp;{question.option2}  </li>
-                            <li>C. &emsp;{question.option3}  </li>
-                            <li>D. &emsp;{question.option4}  </li>
-                            <li>Correct Option. &emsp;{question.answer}   </li>
+                            <li>A. &emsp;{question.A}  </li>
+                            <li>B. &emsp;{question.B}  </li>
+                            <li>C. &emsp;{question.C}  </li>
+                            <li>D. &emsp;{question.D}  </li>
+                            <li>Correct Option. &emsp;{question.ans}   </li>
                             <li>Marks. &emsp;{question.marks}   </li>
                         </ul>
                     </li>
@@ -63,13 +67,13 @@ class CreateTest extends Component {
             title: '',
             duration: '',
             subject: '',
-            start_date: '',
+            startDate: '',
             question: '',
-            option1: '',
-            option2: '',
-            option3: '',
-            option4: '',
-            answer: '',
+            A: '',
+            B: '',
+            C: '',
+            D: '',
+            ans: '',
             marks: 1,
             test: [],
             isTestInitialised: false,
@@ -95,18 +99,18 @@ class CreateTest extends Component {
             duration: this.state.test.duration,
             questions: this.state.test.questions,
             subject: this.state.test.subject,
-            start_date: this.state.test.start_date,
-            total_marks: this.state.test.totalmarks + this.state.marks
+            startDate: this.state.test.startDate,
+            totalMarks: Number(this.state.test.totalMarks) +  Number(this.state.marks)
         }
         const question = {
-            number: this.state.questionstotal + 1,
+            questionNo: this.state.questionstotal + 1,
             question: this.state.question,
-            option1: this.state.option1,
-            option2: this.state.option2,
-            option3: this.state.option3,
-            option4: this.state.option4,
+            A: this.state.A,
+            B: this.state.B,
+            C: this.state.C,
+            D: this.state.D,
             marks: this.state.marks,
-            answer: this.state.answer
+            ans: this.state.ans
         }
         console.log("Current question is " + JSON.stringify(question));
         console.log("Current test  is " + JSON.stringify(testnew));
@@ -116,12 +120,12 @@ class CreateTest extends Component {
             test: testnew,
             questionstotal: this.state.questionstotal + 1,
             question: '',
-            option1: '',
-            option2: '',
-            option3: '',
-            option4: '',
+            A: '',
+            B: '',
+            C: '',
+            D: '',
             marks: 1,
-            answer: ''
+            ans: ''
         });
         console.log("Current State after Update is " + JSON.stringify(this.state.test));
 
@@ -135,8 +139,8 @@ class CreateTest extends Component {
             title: this.state.title,
             duration: this.state.duration,
             subject:this.state.subject,
-            totalemarks: 0,
-            start_date: this.state.start_date,
+            totalMarks: 0,
+            startDate: this.state.startDate,
             questions: []
         };
         this.setState({
@@ -148,7 +152,10 @@ class CreateTest extends Component {
     handleFinish(event) {
         event.preventDefault();
         alert("The Following Paper will be Submitted " + JSON.stringify(this.state.test));
-        this.props.history.push('/groupdetail');
+        const groupId=this.props.groupId;
+        const test= this.state.test;
+        this.props.createTest(groupId,test);
+        // this.props.history.push('/groupdetail');
         
     }
 
@@ -180,9 +187,9 @@ class CreateTest extends Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label htmlFor="start_date" md={2}>Tentative Test Date </Label>
+                            <Label htmlFor="startDate" md={2}>Tentative Test Date </Label>
                             <Col md={10}>
-                                <Input type="datetime-local" id="start_date" name="start_date" placeholder="Tentative Start Date" value={this.state.start_date} onChange={this.handleInputChange} />
+                                <Input type="datetime-local" id="startDate" name="startDate" placeholder="Tentative Start Date" value={this.state.startDate} onChange={this.handleInputChange} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -199,33 +206,33 @@ class CreateTest extends Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label htmlFor="option1" md={2}>A. </Label>
+                            <Label htmlFor="A" md={2}>A. </Label>
                             <Col md={10}>
-                                <Input type="text" id="option1" name="option1" placeholder="Option A" value={this.state.option1} onChange={this.handleInputChange} />
+                                <Input type="text" id="A" name="A" placeholder="Option A" value={this.state.A} onChange={this.handleInputChange} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label htmlFor="option2" md={2}>B. </Label>
+                            <Label htmlFor="B" md={2}>B. </Label>
                             <Col md={10}>
-                                <Input type="text" id="option2" name="option2" placeholder="Option B" value={this.state.option2} onChange={this.handleInputChange} />
+                                <Input type="text" id="B" name="B" placeholder="Option B" value={this.state.B} onChange={this.handleInputChange} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label htmlFor="option3" md={2}>C. </Label>
+                            <Label htmlFor="C" md={2}>C. </Label>
                             <Col md={10}>
-                                <Input type="text" id="option3" name="option3" placeholder="Option C" value={this.state.option3} onChange={this.handleInputChange} />
+                                <Input type="text" id="C" name="C" placeholder="Option C" value={this.state.C} onChange={this.handleInputChange} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label htmlFor="option4" md={2}>D.</Label>
+                            <Label htmlFor="D" md={2}>D.</Label>
                             <Col md={10}>
-                                <Input type="text" id="option4" name="option4" placeholder="Option D" value={this.state.option4} onChange={this.handleInputChange} />
+                                <Input type="text" id="D" name="D" placeholder="Option D" value={this.state.D} onChange={this.handleInputChange} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label htmlFor="answer" md={2}>Correct Option. </Label>
+                            <Label htmlFor="ans" md={2}>Correct Option. </Label>
                             <Col md={10}>
-                                <Input type="text" id="answer" name="answer" placeholder="e.g. A" value={this.state.answer} onChange={this.handleInputChange} />
+                                <Input type="text" id="ans" name="ans" placeholder="e.g. A" value={this.state.ans} onChange={this.handleInputChange} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -258,4 +265,4 @@ class CreateTest extends Component {
         )
     }
 }
-export default CreateTest;
+export default connect(null,mapDispatchToProps)(CreateTest);

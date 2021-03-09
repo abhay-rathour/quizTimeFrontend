@@ -3,7 +3,36 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Table, Label, For
 import { MDBBtn} from 'mdbreact';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
+import {connect} from 'react-redux';
+import {createGroup,acceptMember,removeReq,removeMem,joinGroup,createTest}from '../redux/ActionCreators/GroupActions.js';
 
+const mapStateToProps = state=>({
+        tests: state.tests,
+        auth: state.auth,
+        groups:state.groups,
+});
+const mapDispatchToProps = (dispatch)=>({
+    createGroup:(group)=>dispatch(createGroup(group)),
+    acceptMember:(groupId,request)=>dispatch(acceptMember(groupId,request)),
+    removeReq:(groupId,requestId)=>dispatch(removeReq(groupId,requestId)),
+    removeMem:(groupId,memberId)=>dispatch(removeMem(groupId,memberId)),
+    joinGroup:(groupId,request)=>dispatch(joinGroup(groupId,request)),
+    createTest:(groupId,test)=>dispatch(createTest(groupId,test))
+});
+
+
+function GroupRows ({group}){
+    return(
+        <tr key={group._id}>
+            <td><span className="fa fa-user fa-lg"></span>{group.name}</td>
+            <td>{group.members.length}</td>
+            <td><Link to="/addNew" ><MDBBtn gradient="aqua" size="sm"> Add </MDBBtn></Link></td>
+            <td>{group.tests.length}</td>
+            <td><Link to={`/createtest/${group._id}`}><MDBBtn gradient="aqua" size="sm"> Create </MDBBtn></Link></td>
+            <td><Link to={`/admingroups/${group._id}`} ><MDBBtn gradient="aqua" size="sm">Details </MDBBtn></Link></td>
+        </tr>
+    );
+}
 
 class Admin extends Component {
     
@@ -18,10 +47,8 @@ class Admin extends Component {
     
         this.toggleModal = this.toggleModal.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.toggleTab = this.toggleTab.bind(this);
-
-       
+        this.handleCreateGroup = this.handleCreateGroup.bind(this);
+        this.toggleTab = this.toggleTab.bind(this); 
     }
     
     toggleTab(tab) {
@@ -48,14 +75,42 @@ class Admin extends Component {
         });
     }
 
-    handleSubmit(event) {
+    handleCreateGroup(event) {
         this.toggleModal();
         alert('The following group will be Initailised Name: ' + this.state.group_name + ' Private: '+ this.state.private );
+        var group={
+            name: this.state.group_name,
+            isPrivate:this.state.private
+        }
+        this.props.createGroup(group);
         event.preventDefault();
     }
-
+    componentDidMount(){
+    }
 
     render(){
+        const groups=this.props.groups.groups;
+        console.log(groups);
+        var grouplist;
+        if(groups)
+         { 
+            grouplist = groups.map((g) => {
+                return (
+                        <GroupRows group={g} />
+                );
+            });
+
+        }
+        else
+        {
+            grouplist=()=>{
+                return(
+                <tr>There are no Groups</tr>
+                );
+            };
+        }
+
+
         return (
             <div className="container mt-5">
                 <Nav tabs>
@@ -87,6 +142,7 @@ class Admin extends Component {
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        
                                         <tr>
                                             <td><span className="fa fa-file fa-lg"></span>TestA</td>
                                             <td>30/40</td>
@@ -125,39 +181,13 @@ class Admin extends Component {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td><span className="fa fa-user fa-lg"></span>Std 12</td>
-                                            <td>40</td>
-                                            <td><Link to="/addNew" ><MDBBtn gradient="aqua" size="sm"> Add </MDBBtn></Link></td>
-                                            <td>5</td>
-                                            <td><Link to="/createtest" ><MDBBtn gradient="aqua" size="sm"> Create </MDBBtn></Link></td>
-                                            <td><Link to="/groupdetail" ><MDBBtn gradient="aqua" size="sm">Details </MDBBtn></Link></td>
-                                        </tr>
-                                        <tr>
-                                        <td><span className="fa fa-user fa-lg"></span>Std 11</td>
-                                            <td>35</td>
-                                            <td><Link to="/addNew" ><MDBBtn gradient="aqua" size="sm"> Add </MDBBtn></Link></td>
-                                            <td>6</td>
-                                            <td><Link to="/createtest" ><MDBBtn gradient="aqua" size="sm"> Create </MDBBtn></Link></td>
-                                            <td><Link to="/groupdetail" ><MDBBtn gradient="aqua" size="sm">Details </MDBBtn></Link></td>
-                                        </tr>
+                                        {grouplist}
                                     </tbody>
                                 </Table>
                                 <Button onClick={this.toggleModal} type="submit" color="light-blue">Create Group</Button>
                             </Col>
                         </Row>
                     </TabPane>
-                    {/* <TabPane tableId="3">
-                        <Row>
-                            <Col sm="12">
-                                <Card body>
-                                    <CardTitle>Special Title Treatment</CardTitle>
-                                    <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                                    <Button>Go somewhere</Button>
-                                </Card>
-                            </Col>
-                        </Row>
-                    </TabPane> */}
                 </TabContent>
 
                                 {/* Create Group Form */}
@@ -165,7 +195,7 @@ class Admin extends Component {
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader toggle={this.toggleModal}><strong>New Group</strong></ModalHeader>
                     <ModalBody >
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form onSubmit={this.handleCreateGroup}>
                             <FormGroup row>
                                 <Col md={10}>
                                     <Input type="text" id="group_name" name="group_name"
@@ -174,15 +204,7 @@ class Admin extends Component {
                                         onChange={this.handleInputChange} />
                                 </Col>
                             </FormGroup>
-                            {/* <FormGroup row>
-                                <div className="col-md-10">
-                                    <select className="browser-default custom-select">
-                                         <option>Group Type</option> 
-                                        <option value="1">Public</option>
-                                        <option value="2">Private</option>
-                                    </select>
-                                </div>
-                            </FormGroup> */}
+                           
                             <FormGroup check>
                                 <Label check>
                                     <Input type="checkbox"
@@ -211,4 +233,4 @@ class Admin extends Component {
    
 }
 
-export default Admin;
+export default connect(mapStateToProps,mapDispatchToProps)(Admin);

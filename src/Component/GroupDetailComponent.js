@@ -1,223 +1,282 @@
-import React, { useState } from 'react';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Table, Button } from 'reactstrap';
+import React, { Component } from 'react';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Table, Button,} from 'reactstrap';
 import { MDBBtn } from 'mdbreact';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
+import {connect} from 'react-redux';
+import {acceptMember,removeMem,removeReq} from '../redux/ActionCreators/GroupActions'
+import {baseUrl} from '../shared/baseUrl';
 
-const GroupDetail = (props) => {
-    const [activeTab, setActiveTab] = useState('1');
 
-    const toggle = tab => {
-        if (activeTab !== tab) setActiveTab(tab);
+const mapDispatchToProps = (dispatch)=>({
+
+    acceptMember:(groupId,request)=>dispatch(acceptMember(groupId,request)),
+    removeReq:(groupId,requestId)=>dispatch(removeReq(groupId,requestId)),
+    removeMem:(groupId,memberId)=>dispatch(removeMem(groupId,memberId)),   
+});
+
+
+
+class GroupDetailAdmin extends Component {
+    
+    constructor(props){
+        super(props);
+        this.state = {
+            activeTab: '1',
+            isFetching:'false',
+            group:null,
+        };
+    
+        this.handleAcceptmember = this.handleAcceptmember.bind(this);
+        this.handleRemoveMember=this.handleRemoveMember.bind(this);
+        this.handleDeleteReq=this.handleDeleteReq.bind(this);
+        this.toggleTab = this.toggleTab.bind(this); 
+        this.fetchGroupwithID=this.fetchGroupwithID.bind(this);
+    }
+    toggleTab(tab) {
+        if (this.state.activeTab !== tab) {
+            this.setState({
+                activeTab: tab});
+            }
+    }
+    fetchGroupwithID = (groupId) => {
+        const bearer= 'Bearer '+localStorage.getItem('token');
+        this.setState({...this.state, isFetching: true});
+        fetch(baseUrl+'groups/' +groupId, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': bearer
+            },
+            credentials: "same-origin"
+        })
+            .then(response => response.json())
+            .then(result => {
+                this.setState({group: result, isFetching: false})
+            })
+            .catch(e => {
+                console.log(e);
+                this.setState({...this.state, isFetching: false});
+            });
+    };
+
+    componentDidMount(){
+        this.fetchGroupwithID(this.props.match.params.groupId);
     }
 
-    return (
-        <div className="container mt-5">
-            <Nav tabs>
-                <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                        Pending Request
-                        </NavLink>
-                </NavItem>
-                <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                        Group Member
-                        </NavLink>
-                </NavItem>
-                <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
-                        Old Test
-                        </NavLink>
-                </NavItem>
-                <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
-                        New Test
-                        </NavLink>
-                </NavItem>
-                <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
-                        Group Details
-                        </NavLink>
-                </NavItem>
-            </Nav>
-            <TabContent activeTab={activeTab}>
-                <TabPane tabId="1">
-                    <Row>
-                        <Col sm="5">
-                            <Table striped bordered hover>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Unique Id</th>
-                                        <th>Requests</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Abhay</td>
-                                        <td>abhay192</td>
-                                        <td><Button type="submit" color="outline-primary" size="sm">
-                                            Confirm
-                                    </Button>
-                                            <Button type="submit" color="outline-danger" size="sm">
-                                                Delete
-                                    </Button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Utkarsh</td>
-                                        <td>utka707</td>
-                                        <td>    <Button type="submit" color="outline-primary" size="sm">
-                                        Confirm
-                                    </Button>
-                                            <Button type="submit" color="outline-danger" size="sm">
-                                            Delete
-                                    </Button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Saurav</td>
-                                        <td>saurav2005</td>
-                                        <td><Button type="submit" color="outline-primary" size="sm">
-                                        Confirm
-                                    </Button>
-                                            <Button type="submit" color="outline-danger" size="sm">
-                                            Delete
-                                    </Button></td>
-                                    </tr>
-                                </tbody>
-                            </Table>
+    handleAcceptmember(req){
+        var request={
+            requestId:req._id,
+            name:req.name,
+            uniqueID:req.uniqueID,
+            userID:req.userID
+        }
+         this.props.acceptMember(this.state.group._id,request);
+    }
+    handleDeleteReq(req){
+        
+        this.props.removeReq(this.state.group._id,req._id);
+    }
+    handleRemoveMember(req){
+        this.props.removeMem(this.state.group._id,req);
 
-                        </Col>
-                    </Row>
+    }
+    
+    render(){
+        if(this.state.isFetching)
+        {
+            return (
+                <p>Loading Groups:-----</p>
+            );
+        }
+        else{
+            console.log(this.state.group)
+            var pendingReqList;
+            const group=this.state.group;
+            console.log(group);
+            if(group.pendingReq.length)
+                {
+                    pendingReqList=group.pendingReq.map((req)=>{
+                        return(
+                            <tr>
+                                <td>{req.name}</td>
+                                <td>{req.uniqueID}</td>
+                                <td><Button type="submit" color="outline-primary" size="sm"onClick={()=>this.handleAcceptmember(req)}>Confirm</Button> <Button type="submit" color="outline-danger" size="sm"onClick={()=>this.handleDeleteReq(req)}>Delete</Button></td>
+                            </tr>
+                        );
+                    })
+                }
+            else{
+        
+                pendingReqList='There are No Pending Req'
+                
+            }
+            var memberList;
+            if(group.members.length)
+                {
+                    memberList=group.members.map((req,index)=>{
+                        var sno=index+1;
+                        return(
+                            <tr>
+                                <td>{sno}</td>
+                                <td>{req.name}</td>
+                                <td>{req.uniqueID}</td>
+                                <td><MDBBtn gradient="aqua" size="sm" onClick={()=>this.handleRemoveMember(req)}> Remove Member </MDBBtn></td>
+                                <td><Link to="#" ><MDBBtn gradient="aqua" size="sm"> Details </MDBBtn></Link></td>
+                            </tr>
+                        );
+                    })
+                }
+            else{
+        
+                memberList='There are No Members in group'
+                
+            }
+            var testslist;
+            if(group.tests.length)
+            {
+                testslist=group.tests.map((test,index)=>{
+                    
+                    return(
+                        <tr>
+                            <td><span className="fa fa-file fa-lg"></span>{test.title}</td>
+                            <td>{test.startDate} IST</td>
+                            <td>{test.subject}</td>
+                            <td>{test.duration}</td>
+                            <td>{test.totalMarks}</td>
+                            <td>
+                                <Link to='#' ><MDBBtn gradient="aqua" size="sm">Preview</MDBBtn></Link>
+                            </td>
+                            <td>
+                                <Link to={`/adminSummary/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Click</MDBBtn></Link>
+                            </td>
+                        </tr>
 
-                </TabPane>
-                <TabPane tabId="2">
-                    <Row>
-                        <Col sm="12">
-                            <Table striped bordered hover>
-                                <thead>
-                                    <tr>
-                                        <th>S.N.</th>
-                                        <th>Name</th>
-                                        <th>Unique Id</th>
-                                        <th>Remove</th>
-                                        <th>Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Abhay</td>
-                                        <td>1901CS77</td>
-                                        <td><Link to="#" ><MDBBtn gradient="aqua" size="sm"> Remove Member </MDBBtn></Link></td>
-                                        <td><Link to="#" ><MDBBtn gradient="aqua" size="sm"> Details </MDBBtn></Link></td>
+                    );
 
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Utkarsh</td>
-                                        <td>1932IT32</td>
-                                        <td><Link to="#" ><MDBBtn gradient="aqua" size="sm"> Remove Member </MDBBtn></Link></td>
-                                        <td><Link to="#" ><MDBBtn gradient="aqua" size="sm"> Details</MDBBtn></Link></td>
+                })
+            }
+            else
+            {
+                testslist='No tests Created Yet'
+            }
+            var grouptype=group.isPrivate?'Private':'Public';
+            return (
+                    <div className="container mt-5">
+                        <Nav tabs>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>
+                                    Pending Request
+                                    </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggleTab('2'); }}>
+                                    Group Member
+                                    </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggleTab('3'); }}>
+                                    Tests
+                                    </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggleTab('4'); }}>
+                                    Group Details
+                                    </NavLink>
+                            </NavItem>
+                        </Nav>
+                        <TabContent activeTab={this.state.activeTab}>
+                            <TabPane tabId="1">
+                                <Row>
+                                    <Col sm="5">
+                                        <Table striped bordered hover>
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Unique Id</th>
+                                                    <th>Requests</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {pendingReqList}
+                                            </tbody>
+                                        </Table>
+            
+                                    </Col>
+                                </Row>
+            
+                            </TabPane>
+                            <TabPane tabId="2">
+                                <Row>
+                                    <Col sm="12">
+                                        <Table striped bordered hover>
+                                            <thead>
+                                                <tr>
+                                                    <th>S.N.</th>
+                                                    <th>Name</th>
+                                                    <th>Unique Id</th>
+                                                    <th>Remove</th>
+                                                    <th>Details</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {memberList}
+                                            </tbody>
+                                        </Table>
+            
+                                    </Col>
+                                </Row>
+                            </TabPane>
+                            
+                            <TabPane tabId="3">
+                                <Row>
+                                    <Col sm="12">
+                                        <Table striped bordered hover>
+                                            <thead>
+                                                <tr>
+                                                    <th>Test Name</th>
+                                                    <th>Tentative Start Time</th>
+                                                    <th>Subject</th>
+                                                    <th>Max.Duration(in Min)</th>
+                                                    <th>Max.Score</th>
+                                                    <th>Preview</th>
+                                                    <th>Summary</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {testslist}
+                                            </tbody>
+                                        </Table>
+            
+                                    </Col>
+                                </Row>
+                                <Link to='/createtest/' ><MDBBtn gradient="aqua" size="sm"> Create a New </MDBBtn></Link>
+                            </TabPane>
+                            <TabPane tabId="4">
+                                <Row>
+                                    <Col sm="12">
+                                       <h5>Group Name: <strong>{group.name}</strong></h5>
+                                       <h5>Group Type: {grouptype}
+                                        </h5>
+                                        <h5>
+                                            Group ID: {group._id}
+                                        </h5>
+                                        <p>Share the Above group ID with Students to help them send a join req to the Group</p>
+                                        
+                                    </Col>
+                                </Row>
+            
+                            </TabPane>
+                        </TabContent>
+                    </div>
+            
+            
+            );
+        }
+        
 
-                                    </tr>
-                                </tbody>
-                            </Table>
-
-                        </Col>
-                    </Row>
-                </TabPane>
-                <TabPane tabId="3">
-                    <Row>
-                        <Col sm="12">
-                            <Table striped bordered hover>
-                                <thead>
-                                    <tr>
-                                        <th>Test Name</th>
-                                        <th>Attempted By</th>
-                                        <th>Avg Score</th>
-                                        <th>Duration</th>
-                                        <th>Passed</th>
-                                        <th>Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><span className="fa fa-file fa-lg"></span>TestA</td>
-                                        <td>30/40</td>
-                                        <td>9.7/11</td>
-                                        <td>00:60:00</td>
-                                        <td>25/40</td>
-                                        <td><Link to="/testdetails" ><MDBBtn gradient="aqua" size="sm"> Click </MDBBtn></Link></td>
-                                    </tr>
-                                    <tr>
-                                        <td><span className="fa fa-file fa-lg"></span>TestB</td>
-                                        <td>35/40</td>
-                                        <td>9.0/11</td>
-                                        <td>00:60:00</td>
-                                        <td>27/40</td>
-                                        <td><Link to="/testdetails" ><MDBBtn gradient="aqua" size="sm"> Click </MDBBtn></Link></td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-
-                        </Col>
-                    </Row>
-
-                </TabPane>
-                <TabPane tabId="4">
-                    <Row>
-                        <Col sm="12">
-                            <Table striped bordered hover>
-                                <thead>
-                                    <tr>
-                                        <th>Test Name</th>
-                                        <th>Tentative Start Time</th>
-                                        <th>Subject</th>
-                                        <th>Max.Duration</th>
-                                        <th>Max.Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><span className="fa fa-file fa-lg"></span>TestA</td>
-                                        <td>Jan 21,2021 9:00AM IST</td>
-                                        <td>Maths</td>
-                                        <td>00:60:00</td>
-                                        <td>50
-                                            <Link to="#" ><MDBBtn gradient="aqua" size="sm">Start</MDBBtn></Link>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><span className="fa fa-file fa-lg"></span>TestB</td>
-                                        <td>Jan 28,2021 9:00AM IST</td>
-                                        <td>Science</td>
-                                        <td>00:60:00</td>
-                                        <td>50
-                                            <Link to="#" ><MDBBtn gradient="aqua" size="sm">Start</MDBBtn></Link>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-
-                        </Col>
-                    </Row>
-                    <Link to="/createtest" ><MDBBtn gradient="aqua" size="sm"> Create a New </MDBBtn></Link>
-                </TabPane>
-                <TabPane tabId="5">
-                    <Row>
-                        <Col sm="12">
-                            <Table striped bordered hover>
-
-                            </Table>
-
-                        </Col>
-                    </Row>
-
-                </TabPane>
-            </TabContent>
-        </div>
-
-    );
+    }
+    
 }
 
-export default GroupDetail;
+export default connect(null,mapDispatchToProps)(GroupDetailAdmin);

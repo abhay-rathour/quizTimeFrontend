@@ -1,10 +1,17 @@
 import React, { Component} from 'react';
-import { Navbar, Nav, NavbarToggler,NavItem, Collapse,Jumbotron ,Form, FormGroup, Col, Input,Button,Modal,ModalHeader,ModalBody,Label} from 'reactstrap';
-import { MDBBtn } from "mdbreact";
-import { NavLink, Redirect } from 'react-router-dom';
+import { Navbar, Nav, NavbarToggler,NavItem, Collapse,Jumbotron, Button} from 'reactstrap';
+import{connect} from 'react-redux';
+import { Link, NavLink} from 'react-router-dom';
+import { logoutUser } from '../redux/ActionCreators/LoginActions';
 
 //Navigation Bar Component of the page
+const mapStateToProps=(state)=>({
+    authenticated:state.auth,
+});
 
+const mapDispatchToProps=(dispatch)=>({
+    logoutUser:()=>dispatch(logoutUser()),
+});
 class NavComp extends Component{
     constructor(props) {
         super(props);
@@ -92,131 +99,6 @@ class NavComp extends Component{
     }
 }
 
-//Login Part of Header 
-
-
-class LoginPart extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            username : '',
-            password : '',
-            admin: false,
-            isModalOpen:false
-        };
-        this.toggleModal=this.toggleModal.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmitLogin = this.handleSubmitLogin.bind(this);
-         this.handleLogout=this.handleLogout.bind(this);
-    };
-
-    handleInputChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-
-        this.setState({
-            [name]: value
-        });
-    }
-    handleSubmitLogin(event) {
-        var user={
-            username : this.state.username,
-            password: this.state.password,
-            userType: this.state.admin?'admins':'users'
-        };
-        console.log(user);
-        this.props.loginUser(user);
-        // fetch('http://localhost:4000/login/',
-        // {
-        //     method: 'POST',
-        //     credentials: 'same-origin',
-        //     headers: {'Content-Type': 'application/json'},
-        //     body: JSON.stringify(user)
-        // })
-        //console.log(user)
-        this.toggleModal();
-        event.preventDefault();
-    }
-    toggleModal() {
-        this.setState({
-            isModalOpen: !this.state.isModalOpen
-        });
-    }
-    handleLogout(){
-        this.props.logoutUser();
-    }
-    render(){
-        //If logged in , Diplay UserName and Logout button
-
-        if(this.props.authenticated.isAuthenticated){
-            return(
-                <div className="row align-items-center">
-                    <div className=" white-text col-sm-2 ml-auto justify-contents-right">
-                       <h4>{this.props.authenticated.user.firstName} </h4>
-                    </div>
-                    <div className="col-sm-2 justify-contents-left">
-                        <Button  size="sm" onClick={this.handleLogout}> LogOut </Button>
-                    </div>
-                </div>
-            );
-        }
-
-        //Else Display Form to login
-
-        else{
-            return(
-                <div className="row "> 
-                   <div  className="col-sm-2 ml-auto">
-                        <Button onClick={this.toggleModal} color="primary">
-                           Login
-                        </Button>
-                        </div>
-                    <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
-                    <ModalHeader toggle={this.toggleModal}><strong>Sign in</strong></ModalHeader>
-                    <ModalBody >
-                        <Form onSubmit={this.handleSubmitLogin}>
-                            <FormGroup row>
-                                <Col md={10}>
-                                    <Input type="text" id="username" name="username"
-                                        placeholder="Username"
-                                        value={this.state.email}
-                                        onChange={this.handleInputChange} />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Col md={10}>
-                                    <Input type="password" id="password" name="password"
-                                        placeholder="Password"
-                                        value={this.state.password}
-                                        onChange={this.handleInputChange} />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup check>
-                                <Label check>
-                                    <Input type="checkbox"
-                                        name="admin"
-                                        checked={this.state.agree}
-                                        onChange={this.handleInputChange} /> {' '}
-                                    <strong>Administrator Account</strong>
-                                </Label>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Col md={{ size: 10 }}>
-                                    <Button type="submit" color="danger">
-                                        Login
-                                    </Button>
-                                </Col>
-                            </FormGroup>
-                        </Form>
-                    </ModalBody>
-                </Modal>
-                 </div>
-
-            );
-        }
-    }
-}
 
 
 //Defines Header and Navigation Bar
@@ -224,6 +106,33 @@ class LoginPart extends Component{
 class Header extends Component {
 
     render(){
+        var loginpart;
+        if(this.props.authenticated.isAuthenticated){
+            loginpart=(
+                    <div className="row align-items-center">
+                        <div className=" white-text col-sm-2 ml-auto justify-contents-right">
+                           <h4>{this.props.authenticated.user.firstname} </h4>
+                        </div>
+                        <div className="col-sm-2 justify-contents-left">
+                            <Button  size="sm" onClick={this.props.logoutUser}> LogOut </Button>
+                        </div>
+                    </div>
+                ); 
+        }
+        else
+        {
+            loginpart=(
+                <div className="row "> 
+                   <div  className="col-sm-2 ml-auto">
+                       <Link to="/login">
+                        <Button  color="primary">
+                           Login
+                        </Button> 
+                        </Link>  
+                    </div>
+                </div>
+                )
+        }
       return(
     
             <div className = "deep-orange lighten-5">
@@ -246,8 +155,9 @@ class Header extends Component {
                             {/* Rendering Login part of Right Half of Header */}
 
                             <div className="col-12 col-sm-6">
-                             <LoginPart authenticated= {this.props.authenticated} loginUser={this.props.loginUser} 
-          logoutUser={this.props.logoutUser} />   
+                             {/* <LoginPart authenticated= {this.props.authenticated} loginUser={this.props.loginUser} 
+                                logoutUser={this.props.logoutUser} />    */}
+                                {loginpart}
                             </div>
                         </div>
                     </div>
@@ -263,4 +173,4 @@ class Header extends Component {
     }
   }
   
-  export default Header;
+  export default connect(mapStateToProps,mapDispatchToProps)(Header);

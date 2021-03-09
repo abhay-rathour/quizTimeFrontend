@@ -1,80 +1,141 @@
 import React, { Component } from 'react';
 import { Card, CardBody, CardHeader, CardText, Form, Button, FormGroup, Input, Label } from 'reactstrap';
-import { TEST } from '../shared/questions';
-class Test extends Component {
+import { Link } from 'react-router-dom';
+// import { TEST } from '../shared/questions';
+import {baseUrl} from '../shared/baseUrl';
+
+class Exam extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-        testDuration: TEST.duration,
-        questions: TEST.questions,
+        endTime: Date.now(),
+        questions: {},
         index: 0,
         disabledNext: false,
         disabledSubmit: true,
         score: 0,
-        answers: [],
-        time: {
-         
-        }
+        answer: '-1',
+        testid : '',
+        // studentid : '',
+        groupid : '',
+        time: {},
+        numberOfQuestions: 0,
+        isExamCompleted : false,
+        isInstructionsToBeDisplayed : true,
+        warningMessage : ''
     };
     this.interval =null;
     this.handleOptionChange = this.handleOptionChange.bind(this);
-    this.initialise = this.initialise.bind(this);
     this.startTimer= this.startTimer.bind(this);
+    this.nextQuestion = this.nextQuestion.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
-  handleOptionChange(event) {
-    var pos = this.state.index;
-    const newAnswers = this.state.answers.slice();
-    newAnswers[pos] = event.target.value;
-    this.setState({
-      answers: newAnswers,
-    });
-
+  handleOptionChange(option) {
+    if(this.state.answer === option){
+      this.setState({
+        answer:'-1'
+      })
+    } else {
+      this.setState({
+        answer:option
+      })
+    }
   }
+  
   componentDidMount() {
-    this.initialise();
-    this.startTimer();
-  }
-  initialise() {
-    var ans = [];
-    for (let i = 0; i < this.state.questions.length; i++) {
-      ans = ans.concat('left');
-    }
+    const param = this.props.match.params
     this.setState({
-      answers: ans
+      // studentid : param.studentId,
+      groupid : param.groupId,
+      testid : param.testId
     })
-  }
-
-
-  toggleNext(e) {
-
-    let index = this.state.index + 1;
-    let disabledNext = index === (this.state.questions.length - 1);
-    let disabledPrev = (index === 0);
-    let disabledSubmit = !(index === (this.state.questions.length - 1));
-    this.setState({ index: index, disabledNext: disabledNext, disabledPrev: disabledPrev, disabledSubmit: disabledSubmit })
-  }
-  toggleSubmit(e) {
-    const choices = this.state.answers.slice();
-    const questions = this.state.questions;
-    var score = 0;
-    for (var i = 0; i < questions.length; i++) {
-      if (choices[i] === questions[i].answer) {
-        score++;
+    const bearer= 'Bearer '+localStorage.getItem('token');
+    fetch(baseUrl + `tests/${param.groupId}/start/${param.testId}`,{
+      method:'GET',
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': bearer
+      },
+      credentials: "same-origin"
+    })
+    .then(response => response.json())
+    .then(res =>{
+      console.log(res)
+      if(res.message)
+      {
+        this.setState({
+          warningMessage : res.message,
+          isInstructionsToBeDisplayed : false
+        })
       }
-    }
-    this.setState({
-      score: score
-    })
-    alert("Quiz has ended and Your Score is " + score);
-    this.props.history.push('/');
+      else{
+        this.setState({
+          questions : {},
+          index : 0,
+          numberOfQuestions: res.totalNumberOfQuestions,
+          endTime : res.remainingTime
+        })  
+        console.log(this.state)
+        this.startTimer()
+      }
+          
+    }).catch(err => alert(err))
+  
   }
 
+  nextQuestion(){
+    const bearer= 'Bearer '+localStorage.getItem('token');
+    fetch(baseUrl + `tests/${this.state.testid}/${this.state.answer}/${this.state.index + 1}`,{
+      method:'GET',
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': bearer
+      },
+      credentials: "same-origin"
+    })
+    .then(response => response.json())
+    .then(res =>{
+      this.setState({
+        questions : res,
+        index : res.number,
+        answer:'-1',
+        isInstructionsToBeDisplayed : false,
+        warningMessage : ''
+      })
+      if(res.number === this.state.numberOfQuestions)
+        this.setState({ 
+          disabledNext : true,
+        disabledSubmit : false
+      })
+    })
+  }
+  handleSubmit(){
+    const bearer= 'Bearer '+localStorage.getItem('token');
+    fetch(baseUrl + `tests/${this.state.testid}/${this.state.answer}/${this.state.index + 1}`,{
+      method:'GET',
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': bearer
+      },
+      credentials: "same-origin"
+    })
+    .then(response => response.json())
+    .then(res => {
+      this.setState({
+        score : res.marks,
+        isExamCompleted : true,
+        questions : undefined
+      })
+    })
+  }
+  
   startTimer =()=>{
-    const countDownTime = Date.now()+(this.state.testDuration)*60000;
+    console.log(this.state)
+    const countDownTime = (this.state.endTime);
     this.interval=setInterval(()=>{
       const now = Date.now();
-      const distance= countDownTime-now;
+      const distance = countDownTime - now;
       var hours =Math.floor((distance%(1000*60*60*60))/(1000*60*60));
       var minutes =Math.floor((distance%(1000*60*60))/(1000*60));
       var seconds =Math.floor((distance%(1000*60))/(1000));
@@ -99,7 +160,7 @@ class Test extends Component {
             min:0,
             sec: 0
           }
-        },this.toggleSubmit());
+        },this.handleSubmit());
       }
       else{
         this.setState({
@@ -114,49 +175,108 @@ class Test extends Component {
   }
 
   render() {
-    const { index, disabledNext,  disabledSubmit } = this.state;
-    const question = this.state.questions ? this.state.questions[index] : null;
-    // console.log("Answers array : " + this.state.answers);
-    if (question) {
+
+    const question = this.state.questions 
+
+    if(this.state.warningMessage){
+      return (
+        <div className='container'>
+          <Card className="mb-5 mt-5">
+            <center><CardHeader className="bg-danger text-white text-center">WARNING</CardHeader></center>
+          </Card>
+          <CardBody>
+            <center>
+              <CardText><h2>{this.state.warningMessage}</h2></CardText>
+              <Link to='/student'><Button color="success">Go to my test</Button></Link>
+            </center> 
+          </CardBody>
+        </div>
+      )
+    } else if(this.state.isInstructionsToBeDisplayed)
+    {
       return (
         <div className='container'>
           <div className="row justify-content-center mt-5"><h2>Time Left:- {this.state.time.hour}:{this.state.time.min}:{this.state.time.sec}</h2></div>
           <Card className="mb-5 mt-5">
-            <CardHeader className="bg-info text-white text-center">{question.number} / {this.state.questions.length}</CardHeader>
-
+            <center><CardHeader className="bg-info text-white text-center">INSTRUCTIONS</CardHeader></center>
           </Card>
           <CardBody>
-            <CardText><h2> Q:- {question.question}</h2></CardText>
+            <CardText>
+              <ul>
+                <li>There is no choice available for going back to previous question.</li>
+                <li>In case of any difficulty, contact your admin.</li>
+                <li><b>All the best!!!</b></li>
+              </ul>
+              <Button color="success" onClick = {this.nextQuestion}>Go to questions</Button>
+            </CardText>
+          </CardBody>
+        </div>
+      )
+    }
+    else if (question) {
+      return (
+        <div className='container'>
+          <div className="row justify-content-center mt-5"><h2>Time Left:- {this.state.time.hour}:{this.state.time.min}:{this.state.time.sec}</h2></div>
+          <Card className="mb-5 mt-5">
+            <CardHeader className="bg-info text-white text-center">{question.number} / {this.state.numberOfQuestions}</CardHeader>
+          </Card>
+          <CardBody>
+            <CardText><h2>{question.question}</h2></CardText>
             <Form className="offset-md-1">
               <FormGroup row >
-                <Label radio >
-                  <Input type="radio" value="option1" checked={this.state.answers[index] === 'option1'} onChange={(event) => this.handleOptionChange(event)} />
-                  {question.option1}
+                <Label check >
+                  <Input type="checkbox" value="A" checked={this.state.answer=== 'A'}  onClick={()=>this.handleOptionChange('A')}/>
+                  {question.A}
+                </Label>
+              </FormGroup>
+              {/* <FormGroup check>
+                                <Label check>
+                                    <Input type="checkbox"
+                                        name="admin"
+                                        checked={this.state.agree}
+                                        onChange={this.handleInputChange} /> {' '}
+                                    <strong>Administrator Account</strong>
+                                </Label>
+              </FormGroup> */}
+              <FormGroup row>
+                <Label check >
+                  <Input type="checkbox" value="B" checked={this.state.answer=== 'B'} onClick={()=>this.handleOptionChange('B')}/>
+                  {question.B}
                 </Label>
               </FormGroup>
               <FormGroup row>
-                <Label radio >
-                  <Input type="radio" value="option2" checked={this.state.answers[index] === 'option2'} onChange={(event) => this.handleOptionChange(event)} />
-                  {question.option2}
-                </Label>
-              </FormGroup>
-              <FormGroup row>
-                <Label radio >
-                  <Input type="radio" value="option3" checked={this.state.answers[index] === 'option3'} onChange={(event) => this.handleOptionChange(event)} />
-                  {question.option3}
+                <Label check >
+                  <Input type="checkbox" value="C" checked={this.state.answer=== 'C'} onClick={()=>this.handleOptionChange('C')}/>
+                  {question.C}
                 </Label>
               </FormGroup>
               <FormGroup row >
-                <Label radio>
-                  <Input type="radio" value="option4" checked={this.state.answers[index] === 'option4'} onChange={(event) => this.handleOptionChange(event)} />
-                  {question.option4}
+                <Label check>
+                  <Input type="checkbox" value="D" checked={this.state.answer=== 'D'} onClick={()=>this.handleOptionChange('D')}/>
+                  {question.D}
                 </Label>
               </FormGroup>
             </Form>
             <div>
-              <Next toggle={(e) => this.toggleNext(e)} active={disabledNext} />
-              <Submit toggle={(e) => this.toggleSubmit(e)} disabled={disabledSubmit} />
+              {/* <Next toggle={(e) => this.toggleNext(e)} nextQuestion={this.nextQuestion} active={disabledNext} />
+              <Submit toggle={(e) => this.toggleSubmit(e)} disabled={disabledSubmit} /> */}
+                <Button color="primary" onClick ={this.nextQuestion} disabled={this.state.disabledNext}>Next</Button>
+                <Button color="success" onClick={this.handleSubmit} disabled={this.state.disabledSubmit}>Submit</Button>
             </div>
+          </CardBody>
+        </div>
+      )
+    } else if(this.state.isExamCompleted){
+      return (
+        <div className='container'>
+          <Card className="mb-5 mt-5">
+            <center><CardHeader className="bg-info text-white text-center">RESULT</CardHeader></center>
+          </Card>
+          <CardBody>
+            <center>
+              <CardText><h2>Marks obtained : <b>{this.state.score}</b></h2></CardText>
+              <Link to='/student'><Button color="success">Go to my test</Button></Link>
+            </center> 
           </CardBody>
         </div>
       )
@@ -166,19 +286,4 @@ class Test extends Component {
   }
 }
 
-
-
-function Next(props) {
-  return (
-    <Button color="primary" onClick={props.toggle} disabled={props.active}>Next</Button>
-  );
-}
-function Submit(props) {
-  return (
-    <Button color="success" onClick={props.toggle} disabled={props.disabled}>Submit</Button>
-  );
-}
-
-
-
-export default Test;
+export default Exam;

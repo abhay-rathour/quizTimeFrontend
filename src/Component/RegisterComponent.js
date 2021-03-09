@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
 import { Card, CardBody, Label, Form, FormGroup, Input, Modal, ModalHeader, ModalBody, Button, Col, CardDeck, CardText, CardHeader } from 'reactstrap';
-
+import {adminRegistration,userRegistration}   from '../redux/ActionCreators/RegisterActions';
 //Registration Component To Handle Registration Forms
+
+const mapDispatchToProps = (dispatch)=>({
+    adminRegistration: (user)=>dispatch(adminRegistration(user)),
+    userRegistration: (user)=>dispatch(userRegistration(user)),
+});
+
+
 
 class Register extends Component {
 
@@ -13,7 +21,6 @@ class Register extends Component {
         this.state = {
             isModal1Open: false,
             isModal2Open: false,
-            reg_code: '',
             username: '',
             firstname: '',
             lastname: '',
@@ -77,7 +84,7 @@ class Register extends Component {
             password: this.state.password
         };
         this.props.adminRegistration(user);
-       
+        this.props.history.push('/');
         event.preventDefault();
     }
     handleSubmitUsers(event) {
@@ -92,8 +99,8 @@ class Register extends Component {
             password: this.state.password
         };
         this.props.userRegistration(user);
-        
         event.preventDefault();
+        this.props.history.push('/');
     }
 
     render() {
@@ -129,14 +136,6 @@ class Register extends Component {
                     <ModalHeader toggle={this.toggleModal1}><strong>Sign up  free Student Account</strong></ModalHeader>
                     <ModalBody >
                         <Form onSubmit={this.handleSubmitUsers}>
-                            <FormGroup row>
-                                <Col md={10}>
-                                    <Input type="text" id="reg_code" name="reg_code"
-                                        placeholder="Registration Code"
-                                        value={this.state.reg_code}
-                                        onChange={this.handleInputChange} />
-                                </Col>
-                            </FormGroup>
                             <FormGroup row>
                                 <Col md={10}>
                                     <Input type="text" id="username" name="username"
@@ -254,4 +253,4 @@ class Register extends Component {
     }
 }
 
-export default Register;
+export default connect(null,mapDispatchToProps)(Register);

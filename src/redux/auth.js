@@ -14,11 +14,12 @@
 // }
 export const Auth = (state = {
     isLoading: false,
-    isAuthenticated: localStorage.getItem('token')? true : false,
+    isAuthenticated: localStorage.getItem('user')?true:false,
     token: localStorage.getItem('token'),
-    // user: localStorage.getItem('creds') ? JSON.parse(localStorage.getItem('creds')) : null,
+    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
     errMess: null,
-    user: null
+    // user: null,
+    isAdmin:localStorage.getItem('isAdmin')==='true'?true:false,
 }, action) => {
 switch (action.type) {
     case ActionTypes.LOGIN_REQUEST:
@@ -31,7 +32,8 @@ switch (action.type) {
             isLoading: false,
             isAuthenticated: true,
             errMess: '',
-            user:action.payload// token: action.token
+            user:action.payload.user,
+            isAdmin:action.access
         };
     case ActionTypes.LOGIN_FAILURE:
         return {...state,

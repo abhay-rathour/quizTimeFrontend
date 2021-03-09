@@ -7,10 +7,12 @@ export const requestLogin = (creds) => {
     }
 }
   
-export const receiveLogin = (response) => {
+export const receiveLogin = (response,access) => {
+    console.log(response,access);
     return {
         type: ActionTypes.LOGIN_SUCCESS,
-        payload: response
+        payload: response,
+        access
     }
 }
   
@@ -23,9 +25,10 @@ export const loginError = (message) => {
 
 export const loginUser = (creds) => (dispatch) => {
     // We dispatch requestLogin to kickoff the call to the API
+    const access=creds.userType==='admins'?true:false;
     dispatch(requestLogin(creds))
-
-    return fetch(baseUrl + 'login', {
+    const type= access?'/admin':'/user';
+    return fetch(baseUrl + 'login'+type, {
         method: 'POST',
         headers: { 
             'Content-Type':'application/json' 
@@ -33,7 +36,7 @@ export const loginUser = (creds) => (dispatch) => {
         body: JSON.stringify(creds)
     })
     .then(response => {
-        if (response.ok) {
+        if (response) {
              console.log( response);
             return response;
         } else {
@@ -50,12 +53,15 @@ export const loginUser = (creds) => (dispatch) => {
         if (response) {
             console.log("I am Here");
             console.log(response);
+            console.log(access);
             // If login was successful, set the token in local storage
-            // localStorage.setItem('token', response.token);
-            localStorage.setItem('creds', JSON.stringify(response));
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('user', JSON.stringify(response.user));
+            localStorage.setItem('isAdmin',access);
             // Dispatch the success action
             // dispatch(fetchFavorites());
-            dispatch(receiveLogin(response));
+            
+            dispatch(receiveLogin(response,access));
         }
         else {
             var error = new Error('Error ' + response.status);
@@ -84,7 +90,8 @@ export const receiveLogout = () => {
 export const logoutUser = () => (dispatch) => {
     dispatch(requestLogout())
     localStorage.removeItem('token');
-    localStorage.removeItem('creds');
+    localStorage.removeItem('user');
+    localStorage.removeItem('isAdmin');
     // dispatch(favoritesFailed("Error 401: Unauthorized"));
     dispatch(receiveLogout())
 }
