@@ -49,7 +49,7 @@ class StudentResult extends Component {
             if(test.questions)
             {
                 var markedAns=test.response.map((res)=>{
-                    if(res.markedAns=="-1")
+                    if(res.markedAns==="-1")
                     {
                         return "Unanswered"
                     }
