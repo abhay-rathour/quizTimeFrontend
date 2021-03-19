@@ -38,7 +38,7 @@ class NavComp extends Component{
                         <Nav navbar>
                             <NavItem>
                                 <NavLink className="nav-link pink-text" to="/tests">
-                                    <span className="fa fa-tasks fa-lg"></span> My Tests
+                                    <span className="fa fa-tasks fa-lg"></span> Groups
                                 </NavLink>
                             </NavItem>
                             <NavItem>

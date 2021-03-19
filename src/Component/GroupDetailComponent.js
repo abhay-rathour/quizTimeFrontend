@@ -4,15 +4,17 @@ import { MDBBtn } from 'mdbreact';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
-import {acceptMember,removeMem,removeReq} from '../redux/ActionCreators/GroupActions'
+import {acceptMember,removeMem,removeReq,DeleteGroup} from '../redux/ActionCreators/GroupActions'
 import {baseUrl} from '../shared/baseUrl';
+import moment from 'moment';
 
 
 const mapDispatchToProps = (dispatch)=>({
 
     acceptMember:(groupId,request)=>dispatch(acceptMember(groupId,request)),
     removeReq:(groupId,requestId)=>dispatch(removeReq(groupId,requestId)),
-    removeMem:(groupId,memberId)=>dispatch(removeMem(groupId,memberId)),   
+    removeMem:(groupId,memberId)=>dispatch(removeMem(groupId,memberId)),
+    DeleteGroup:(groupId)=>dispatch(DeleteGroup(groupId))  
 });
 
 
@@ -32,6 +34,10 @@ class GroupDetailAdmin extends Component {
         this.handleDeleteReq=this.handleDeleteReq.bind(this);
         this.toggleTab = this.toggleTab.bind(this); 
         this.fetchGroupwithID=this.fetchGroupwithID.bind(this);
+        this.removeMem=this.removeMem.bind(this);
+        this.removeReq=this.removeReq.bind(this);
+        this.acceptMember=this.acceptMember.bind(this);
+        this.handleDeleteGroup=this.handleDeleteGroup.bind(this);
     }
     toggleTab(tab) {
         if (this.state.activeTab !== tab) {
@@ -59,7 +65,115 @@ class GroupDetailAdmin extends Component {
                 this.setState({...this.state, isFetching: false});
             });
     };
+    removeMem= (groupId,member)  => {
 
+        const bearer = 'Bearer ' + localStorage.getItem('token');
+        var request={
+            groupId:groupId,
+            memberId:member._id,
+            name:member.name,
+            uniqueID:member.uniqueID,
+            userID:member.userID
+        }
+        return fetch(baseUrl +'groups/'+groupId+'/member', {
+            method: "DELETE",
+            body: JSON.stringify(request),
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': bearer
+            },
+            credentials: "same-origin"
+        })
+        .then(response => {
+            if (response) {
+              return response;
+            } else {
+              var error = new Error('Error ' + response.status + ': ' + response.statusText);
+              error.response = response;
+              throw error;
+            }
+          },
+          error => {
+                throw error;
+          })
+        .then(response => response.json())
+        .then(Newgroup => { console.log('Group Updated', Newgroup); 
+        this.setState({
+            group:Newgroup
+        })
+        })
+        .catch(error => console.log(error));
+    }
+    removeReq= (groupId,reqId) =>  {
+
+        const bearer = 'Bearer ' + localStorage.getItem('token');
+        var request={
+            groupId:groupId,
+            requestId:reqId
+        }
+        return fetch(baseUrl +'groups/'+groupId+'/removereq', {
+            method: "DELETE",
+            body: JSON.stringify(request),
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': bearer
+            },
+            credentials: "same-origin"
+        })
+        .then(response => {
+            if (response) {
+              return response;
+            } else {
+              var error = new Error('Error ' + response.status + ': ' + response.statusText);
+              error.response = response;
+              throw error;
+            }
+          },
+          error => {
+                throw error;
+          })
+        .then(response => response.json())
+        .then(Newgroup => { console.log('Group Updated', Newgroup); 
+        this.setState({
+            group:Newgroup
+        })
+        })
+        .catch(error => console.log(error));
+    }
+
+    acceptMember = (groupId,request) =>  {
+
+        const bearer = 'Bearer ' + localStorage.getItem('token');
+        
+        return fetch(baseUrl+'groups/' +groupId+'/member', {
+            method: "PUT",
+            body: JSON.stringify(request),
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': bearer
+            },
+            credentials: "same-origin"
+        })
+        .then(response => {
+            if (response) {
+              return response;
+            } else {
+              var error = new Error('Error ' + response.status + ': ' + response.statusText);
+              error.response = response;
+              throw error;
+            }
+          },
+          error => {
+                throw error;
+          })
+        .then(response => response.json())
+        .then(Newgroup => { console.log('Group Updated', Newgroup); 
+        this.setState({
+            group:Newgroup
+        })
+        })
+        .catch(error => console.log(error));
+    }
     componentDidMount(){
         this.fetchGroupwithID(this.props.match.params.groupId);
     }
@@ -71,15 +185,27 @@ class GroupDetailAdmin extends Component {
             uniqueID:req.uniqueID,
             userID:req.userID
         }
-         this.props.acceptMember(this.state.group._id,request);
+         this.acceptMember(this.state.group._id,request);
     }
     handleDeleteReq(req){
         
-        this.props.removeReq(this.state.group._id,req._id);
+        this.removeReq(this.state.group._id,req._id);
     }
     handleRemoveMember(req){
-        this.props.removeMem(this.state.group._id,req);
+        this.removeMem(this.state.group._id,req);
 
+    }
+    handleDeleteGroup()
+    {
+        var y=window.confirm("Are You Really want to delete the group? All Data Related to the group will be lost and It is Irriversible Operation");
+        if(y)
+        {
+            this.props.DeleteGroup(this.state.group._id);
+            this.props.history.push('/');
+        }
+        else{
+
+        }
     }
     
     render(){
@@ -140,12 +266,13 @@ class GroupDetailAdmin extends Component {
                     return(
                         <tr>
                             <td><span className="fa fa-file fa-lg"></span>{test.title}</td>
-                            <td>{test.startDate} IST</td>
+                            {/* <td>{moment.utc(test.startDate).local().format('MMMM Do YYYY,h:mm:ss a')}</td> */}
+                            <td>{moment.utc(test.startDate).local().format('llll')}</td>
                             <td>{test.subject}</td>
                             <td>{test.duration}</td>
                             <td>{test.totalMarks}</td>
                             <td>
-                                <Link to='#' ><MDBBtn gradient="aqua" size="sm">Preview</MDBBtn></Link>
+                                <Link to={`/edittest/${group._id}/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Edit</MDBBtn></Link>
                             </td>
                             <td>
                                 <Link to={`/adminSummary/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Click</MDBBtn></Link>
@@ -250,7 +377,7 @@ class GroupDetailAdmin extends Component {
             
                                     </Col>
                                 </Row>
-                                <Link to='/createtest/' ><MDBBtn gradient="aqua" size="sm"> Create a New </MDBBtn></Link>
+                                <Link to={`/createtest/${group._id}`} ><MDBBtn gradient="aqua" size="sm"> Create a New </MDBBtn></Link>
                             </TabPane>
                             <TabPane tabId="4">
                                 <Row>
@@ -265,6 +392,7 @@ class GroupDetailAdmin extends Component {
                                         
                                     </Col>
                                 </Row>
+                                <MDBBtn gradient="aqua" size="sm" onClick={this.handleDeleteGroup}> Delete this Group </MDBBtn>
             
                             </TabPane>
                         </TabContent>

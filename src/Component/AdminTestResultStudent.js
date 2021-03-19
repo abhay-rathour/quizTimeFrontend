@@ -1,23 +1,23 @@
+import moment from 'moment';
 import React, { Component } from 'react';
-import {  Card, CardHeader, CardBody ,CardTitle,CardText,Button} from 'reactstrap';
+import {  Card, CardHeader, CardBody ,CardTitle,CardText} from 'reactstrap';
 import {baseUrl} from '../shared/baseUrl';
-import {Link} from 'react-router-dom'
-import  moment from 'moment';
 
-class StudentResult extends Component {
+
+class AdminStudentResult extends Component {
     constructor(props) {
         super(props);
         this.state = {
             test:{},
-            isFetching:false,
-            message:undefined
+            isFetching:false
         }
     }
     componentDidMount(){
         const testId=this.props.match.params.testId;
+        const studentId=this.props.match.params.studentId;
         const bearer= 'Bearer '+localStorage.getItem('token');
         this.setState({...this.state, isFetching: true});
-        fetch(baseUrl+'student/'+testId+'/getCompletedQuestions', {
+        fetch(baseUrl+'admin/'+testId+'/getCompletedQuestions/'+studentId, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -27,21 +27,12 @@ class StudentResult extends Component {
         })
             .then(response => response.json())
             .then(result => {
-                if(result.warningMssg)
-                {
-                    console.log(result);
-                    this.setState({...this.state, isFetching: false,message:result.warningMssg, test:{}});
-                }
-                else{
-                    // console.log(result)
+                console.log(result)
                 this.setState({test: result, isFetching: false})
-
-                }
-                
             })
             .catch(e => {
                 console.log(e);
-            
+                this.setState({...this.state, isFetching: false});
             });
 
     }
@@ -53,27 +44,7 @@ class StudentResult extends Component {
                 <>Loading-----</>
             )
         }
-        else if(this.state.message){
-            return(
-                <div className='container'>
-                    <Card className="mb-5 mt-5">
-                    <center><CardHeader className="bg-danger text-white text-center">WARNING</CardHeader></center>
-                        
-                    <CardBody>
-                    <center>
-                    <CardText><h2>{this.state.message}</h2></CardText>
-                    <Link to='/student'><Button color="success">Go to my test</Button></Link>
-                    </center> 
-                </CardBody>
-          </Card>
-        </div>
-                
-            );
-        }
-        
-        else
-        {
-            console.log(this.state)
+        else{
             const test=this.state.test;
             console.log(test);
             var questionlist;
@@ -95,7 +66,7 @@ class StudentResult extends Component {
                         var color=markedAns[index]===question.ans?'bg-success':'bg-danger';
                         return (
                             <Card className="mt-2">
-                            <CardHeader as="h5" className={color}>Question : {index+1}</CardHeader>
+                            <CardHeader as="h5" className={color} variant = 'light'>Question : {index+1}</CardHeader>
                             <CardBody>
                                 <CardTitle>{question.question}</CardTitle>
                                 <CardText>
@@ -117,20 +88,23 @@ class StudentResult extends Component {
                     questionlist=(<>No Questions</>)
                 }
             }
+            else{
+                questionlist=(<>Error Occured</>)
+            }
             return (
                 <div className="container">
                     <div className="row">
                         <div className="col-12 justify-content-center">
-                        <Card className="mt-2">
+                        <Card className="mt-2 mb-2">
                             <CardHeader as="h5" className="bg-warning">Test Details</CardHeader>
-                                <CardBody>
-                                    <CardTitle>Title: &emsp;{test.title}
+                            <CardBody>
+                                <CardTitle>Title: &emsp;{test.title}
                                         <br/>Subject:  &emsp;{test.subject}
                                         <br/>Duration: &emsp;{test.duration} (in min)
                                         <br/>Start Date: &emsp;{moment.utc(test.startDate).local().format('llll')}
-                                    </CardTitle>
-                                </CardBody>
-                        </Card>
+                                </CardTitle>
+                            </CardBody>
+                         </Card>
                         <Card className="mb-5 mt-5 ">
                             <CardHeader className="bg-info text-white text-center">
                                 Marks Obtained: {test.marksObtained} / {test.totalMarks} 
@@ -153,4 +127,4 @@ class StudentResult extends Component {
         
     }
 }
-export default StudentResult;
+export default AdminStudentResult;

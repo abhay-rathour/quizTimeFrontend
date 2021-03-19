@@ -44,6 +44,35 @@ export const createGroup = (group) => (dispatch) => {
     .then(groups => { console.log('Group Created', groups); dispatch(addGroups(groups)); })
     .catch(error => dispatch(groupsFailed(error.message)));
 }
+export const DeleteGroup = (groupId) => (dispatch) => {
+
+  const bearer = 'Bearer ' + localStorage.getItem('token');
+
+  return fetch(baseUrl + 'groups/'+groupId, {
+      method: "DELETE",
+      // body: JSON.stringify(group),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': bearer
+      },
+      credentials: "same-origin"
+  })
+  .then(response => {
+      if (response) {
+        return response;
+      } else {
+        var error = new Error('Error ' + response.status + ': ' + response.statusText);
+        error.response = response;
+        throw error;
+      }
+    },
+    error => {
+          throw error;
+    })
+  .then(response => response.json())
+  .then(groups => { console.log('Group Deleted', groups); dispatch(addGroups(groups)); })
+  .catch(error => dispatch(groupsFailed(error.message)));
+}
 
 // export const deleteFavorite = (dishId) => (dispatch) => {
 
@@ -206,7 +235,7 @@ export const removeMem= (groupId,member) => (dispatch) => {
             throw error;
       })
     .then(response => response.json())
-    .then(groups => { console.log('Group Updated', groups); dispatch(addGroups(groups)); })
+    .then(group => { console.log('Group Updated', group); return group; })
     .catch(error => dispatch(groupsFailed(error.message)));
 }
 
@@ -236,7 +265,16 @@ export const joinGroup = (groupId,request) => (dispatch) => {
           throw error;
     })
   .then(response => response.json())
-  .then(groups => { console.log('Group Updated', groups); dispatch(addGroups(groups)); })
+  .then(groups => { 
+    console.log('Group Updated', groups); 
+    if(groups.warningMssg)
+    {
+      alert("Cannot make duplicate request. You are already a member...")
+      // Redirect('/student')
+    }
+    else
+      dispatch(addGroups(groups)); 
+  })
   .catch(error => dispatch(groupsFailed(error.message)));
 }
 

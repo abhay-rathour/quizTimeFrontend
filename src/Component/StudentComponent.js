@@ -59,7 +59,7 @@ class Student extends Component{
 
     handleJoinGroup(event) {
         this.toggleModal();
-        alert('The following Req will be Sent to join the Group: ' + this.state.groupID  );
+        alert('The following Req will be Sent to join the Group: ' + this.state.groupId  );
         var req={
             name: this.state.name,
             uniqueID:this.state.uniqueID,

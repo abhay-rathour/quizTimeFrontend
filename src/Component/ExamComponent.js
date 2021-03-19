@@ -51,7 +51,7 @@ class Exam extends Component {
       testid : param.testId
     })
     const bearer= 'Bearer '+localStorage.getItem('token');
-    fetch(baseUrl + `tests/${param.groupId}/start/${param.testId}`,{
+    fetch(baseUrl + 'tests/'+param.groupId+'/start/'+param.testId,{
       method:'GET',
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +59,9 @@ class Exam extends Component {
       },
       credentials: "same-origin"
     })
-    .then(response => response.json())
+    .then(response => 
+      // console.log(response);
+      response.json())
     .then(res =>{
       console.log(res)
       if(res.message)

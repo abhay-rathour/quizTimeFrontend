@@ -12,11 +12,13 @@ import Exam from './ExamComponent';
 import Register from './RegisterComponent';
 import Admin from './AdminComponent';
 import CreateTest from './CreateTestComponent';
+import EditTest from './EditTestComponent';
 import GroupDetailAdmin from './GroupDetailComponent';
 import GroupDetailStudent from './GroupDetailStudentComponent';
 import {adminRegistration,userRegistration}   from '../redux/ActionCreators/RegisterActions';
 import {createGroup,fetchGroups,acceptMember,removeReq,removeMem,joinGroup,createTest}from '../redux/ActionCreators/GroupActions.js';
 import Login from './LoginComponent';
+import AdminStudentResult from './AdminTestResultStudent';
 import StudentResult from './StudentTestResultComponent';
 import AdminSummary from './AdminSummaryComponent';
 
@@ -111,9 +113,11 @@ class Main extends Component {
                     <PrivateRoute path="/admin" component={Admin}/>
                     <PrivateRoute path="/exam/:groupId/:testId" component={Exam}/>
                     <PrivateRoute path="/createtest/:groupId" component={CreateTest}/>
+                    <PrivateRoute path="/edittest/:groupId/:testId" component={EditTest}/>
                     <PrivateRoute path="/admingroups/:groupId" component={GroupDetailAdmin}/>
                     <PrivateRoute path="/studentgroups/:groupId" component={GroupDetailStudent}/>
                     <PrivateRoute path="/student/result/:testId" component={StudentResult}/>
+                    <PrivateRoute path="/adminresult/:testId/:studentId" component={AdminStudentResult}/>
                     <PrivateRoute path="/adminSummary/:testId" component={AdminSummary}/>
                     <Redirect to ="/home" />
                 </Switch>

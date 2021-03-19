@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import {baseUrl} from '../shared/baseUrl';
+import moment from 'moment';
 
 
 const mapDispatchToProps = (dispatch)=>({
@@ -80,7 +81,7 @@ class GroupDetailStudent extends Component {
                         return(
                             <tr>
                                 <td><span className="fa fa-file fa-lg"></span>{test.title}</td>
-                                <td>{test.startDate} IST</td>
+                                <td>{moment.utc(test.startDate).local().format('llll')}</td>
                                 <td>{test.subject}</td>
                                 <td>{test.duration}</td>
                                 <td>{test.totalMarks}</td>
@@ -95,7 +96,7 @@ class GroupDetailStudent extends Component {
                         return(
                             <tr>
                                 <td><span className="fa fa-file fa-lg"></span>{test.title}</td>
-                                <td>{test.startDate} IST</td>
+                                <td>{moment.utc(test.startDate).local().format('llll')}</td>
                                 <td>{test.subject}</td>
                                 <td>{test.duration}</td>
                                 <td>{test.totalMarks}</td>

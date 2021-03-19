@@ -1,8 +1,7 @@
 import React, {Component } from 'react';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Table, Label, Form, FormGroup, Input, Modal, ModalHeader, ModalBody, Button} from 'reactstrap';
+import { TabContent, TabPane,  Row, Col, Table, Label, Form, FormGroup, Input, Modal, ModalHeader, ModalBody, Button} from 'reactstrap';
 import { MDBBtn} from 'mdbreact';
 import { Link } from 'react-router-dom';
-import classnames from 'classnames';
 import {connect} from 'react-redux';
 import {createGroup,acceptMember,removeReq,removeMem,joinGroup,createTest,fetchGroups}from '../redux/ActionCreators/GroupActions.js';
 
@@ -26,7 +25,7 @@ function GroupRows ({group}){
         <tr key={group._id}>
             <td><span className="fa fa-user fa-lg"></span>{group.name}</td>
             <td>{group.members.length}</td>
-            <td><Link to="/addNew" ><MDBBtn gradient="aqua" size="sm"> Add </MDBBtn></Link></td>
+            {/* <td><Link to="/addNew" ><MDBBtn gradient="aqua" size="sm"> Add </MDBBtn></Link></td> */}
             <td>{group.tests.length}</td>
             <td><Link to={`/createtest/${group._id}`}><MDBBtn gradient="aqua" size="sm"> Create </MDBBtn></Link></td>
             <td><Link to={`/admingroups/${group._id}`} ><MDBBtn gradient="aqua" size="sm">Details </MDBBtn></Link></td>
@@ -116,7 +115,7 @@ class Admin extends Component {
 
         return (
             <div className="container mt-5">
-                <Nav tabs>
+                {/* <Nav tabs>
                     <NavItem>
                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>
                             Tests
@@ -128,9 +127,9 @@ class Admin extends Component {
                             </NavLink>
                     </NavItem>
                     
-                </Nav>
+                </Nav> */}
                 <TabContent activeTab={this.state.activeTab}>
-                    <TabPane tabId="1">
+                    {/* <TabPane tabId="1">
                         <Row>
                             <Col sm="12">
                             <Table striped bordered hover>
@@ -168,8 +167,8 @@ class Admin extends Component {
                             </Col>
                         </Row>
     
-                    </TabPane>
-                    <TabPane tabId="2">
+                    </TabPane> */}
+                    <TabPane tabId="1">
                         <Row>
                             <Col sm="12">
                                 <Table striped bordered hover>
@@ -177,7 +176,7 @@ class Admin extends Component {
                                         <tr>
                                             <th>Group Name</th>
                                             <th>Total Members</th>
-                                            <th>Add New Members</th>
+                                            {/* <th>Add New Members</th> */}
                                             <th>Total Tests</th>
                                             <th>Create New Test</th>
                                             <th>Details</th>
@@ -193,7 +192,7 @@ class Admin extends Component {
                     </TabPane>
                 </TabContent>
 
-                                {/* Create Group Form */}
+                {/* Create Group Form */}
 
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader toggle={this.toggleModal}><strong>New Group</strong></ModalHeader>
