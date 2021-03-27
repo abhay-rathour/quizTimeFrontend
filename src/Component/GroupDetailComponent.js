@@ -262,6 +262,19 @@ class GroupDetailAdmin extends Component {
             if(group.tests.length)
             {
                 testslist=group.tests.map((test,index)=>{
+                    var testtype;
+                    if(test.testType==='1')
+                        {
+                         testtype="MCQ Only"
+                        }
+                    if(test.testType==='2')
+                        {
+                        testtype="MCQ + Fill in the blanks"
+                        }
+                    if(test.testType==='3')
+                        {
+                        testtype="Assignment Type"
+                        }
                     
                     return(
                         <tr>
@@ -270,12 +283,13 @@ class GroupDetailAdmin extends Component {
                             <td>{moment.utc(test.startDate).local().format('llll')}</td>
                             <td>{test.subject}</td>
                             <td>{test.duration}</td>
+                            <td>{testtype}</td>
                             <td>{test.totalMarks}</td>
                             <td>
                                 <Link to={`/edittest/${group._id}/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Edit</MDBBtn></Link>
                             </td>
                             <td>
-                                <Link to={`/adminSummary/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Click</MDBBtn></Link>
+                                <Link to={`/adminSummary/${test.testType}/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Click</MDBBtn></Link>
                             </td>
                         </tr>
 
@@ -293,19 +307,20 @@ class GroupDetailAdmin extends Component {
                         <Nav tabs>
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>
-                                    Pending Request
+                                    Tests
                                     </NavLink>
                             </NavItem>
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggleTab('2'); }}>
-                                    Group Member
+                                    Pending Request
                                     </NavLink>
                             </NavItem>
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggleTab('3'); }}>
-                                    Tests
+                                    Group Member
                                     </NavLink>
                             </NavItem>
+                            
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggleTab('4'); }}>
                                     Group Details
@@ -313,7 +328,7 @@ class GroupDetailAdmin extends Component {
                             </NavItem>
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
-                            <TabPane tabId="1">
+                            <TabPane tabId="2">
                                 <Row>
                                     <Col sm="5">
                                         <Table striped bordered hover>
@@ -333,7 +348,7 @@ class GroupDetailAdmin extends Component {
                                 </Row>
             
                             </TabPane>
-                            <TabPane tabId="2">
+                            <TabPane tabId="3">
                                 <Row>
                                     <Col sm="12">
                                         <Table striped bordered hover>
@@ -355,7 +370,7 @@ class GroupDetailAdmin extends Component {
                                 </Row>
                             </TabPane>
                             
-                            <TabPane tabId="3">
+                            <TabPane tabId="1">
                                 <Row>
                                     <Col sm="12">
                                         <Table striped bordered hover>
@@ -365,6 +380,7 @@ class GroupDetailAdmin extends Component {
                                                     <th>Tentative Start Time</th>
                                                     <th>Subject</th>
                                                     <th>Max.Duration(in Min)</th>
+                                                    <th>Test Type</th>
                                                     <th>Max.Score</th>
                                                     <th>Preview</th>
                                                     <th>Summary</th>

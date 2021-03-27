@@ -57,6 +57,7 @@ export const loginUser = (creds) => (dispatch) => {
             // If login was successful, set the token in local storage
             localStorage.setItem('token', response.token);
             localStorage.setItem('user', JSON.stringify(response.user));
+            localStorage.setItem('userId',response.user._id);
             localStorage.setItem('isAdmin',access);
             // Dispatch the success action
             // dispatch(fetchFavorites());

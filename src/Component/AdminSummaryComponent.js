@@ -60,7 +60,7 @@ class AdminSummary extends Component {
                             <td>{user.marks}</td>
                             <td>{user.totalMarks}</td>
                             <td>
-                                <Link to={`/adminresult/${this.props.match.params.testId}/${user.userID}`} ><MDBBtn gradient="aqua" size="sm">See Responses</MDBBtn></Link>
+                                <Link to={`/adminresult/${this.props.match.params.testType}/${this.props.match.params.testId}/${user.userID}`} ><MDBBtn gradient="aqua" size="sm">See Responses</MDBBtn></Link>
                             </td>
                         </tr>
 

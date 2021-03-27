@@ -73,35 +73,67 @@ class GroupDetailStudent extends Component {
             const tests=this.state.group.tests;
             console.log(tests);
             var testslist;
+            
+            
+
             if(tests.length)
-            {
+            {  
                 testslist=tests.map((test,index)=>{
+                    var testtype;
+                    if(test.testType==='1')
+                        {
+                         testtype="MCQ Only"
+                        }
+                    if(test.testType==='2')
+                        {
+                        testtype="MCQ + Fill in the blanks"
+                        }
+                    if(test.testType==='3')
+                        {
+                        testtype="Assignment Type"
+                        }
                     if(test.isCompleted)
                     {
+                        
                         return(
                             <tr>
                                 <td><span className="fa fa-file fa-lg"></span>{test.title}</td>
                                 <td>{moment.utc(test.startDate).local().format('llll')}</td>
                                 <td>{test.subject}</td>
                                 <td>{test.duration}</td>
+                                <td>{testtype}</td>
                                 <td>{test.totalMarks}</td>
                                 <td>
-                                    <Link to={`/student/result/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Results</MDBBtn></Link>
+                                    <Link to={`/student/result/${test.testType}/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Results</MDBBtn></Link>
                                 </td>
                             </tr>
     
                         );
                     }
                     else{
+                        var examlink;
+                        if(test.testType==='1')
+                        {
+                           examlink=`/exam1/${this.state.group._id}/${test._id}`;
+                        }
+                        else if(test.testType==='2')
+                        {
+                           examlink=`/exam2/${this.state.group._id}/${test._id}`;
+                        }
+                        else if(test.testType==='3')
+                        {
+                           examlink=`/exam3/${this.state.group._id}/${test._id}`;
+                        }
                         return(
                             <tr>
                                 <td><span className="fa fa-file fa-lg"></span>{test.title}</td>
                                 <td>{moment.utc(test.startDate).local().format('llll')}</td>
                                 <td>{test.subject}</td>
                                 <td>{test.duration}</td>
+                                <td>{testtype}</td>
                                 <td>{test.totalMarks}</td>
                                 <td>
-                                    <Link to = {`/exam/${this.state.group._id}/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Start Test</MDBBtn></Link>
+                                    <Link to = {examlink} ><MDBBtn gradient="aqua" size="sm">Start Test</MDBBtn></Link>
                                 </td>
                             </tr>
     
@@ -143,6 +175,7 @@ class GroupDetailStudent extends Component {
                                                     <th>Start Date</th>
                                                     <th>Subject</th>
                                                     <th>Duration(in Minutes)</th>
+                                                    <th>Test Type</th>
                                                     <th>Total Marks</th>
                                                     <th>Start / Result</th>
                                                 </tr>

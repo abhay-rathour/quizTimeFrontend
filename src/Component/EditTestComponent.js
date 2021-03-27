@@ -20,6 +20,7 @@ class EditTest extends Component {
             D: '',
             ans: '',
             marks: 1,
+            questionType:'1',
             test: [],
             isTestInitialised: false,
             questionstotal: 0,
@@ -40,7 +41,8 @@ class EditTest extends Component {
 
     toggleModal1() {
         this.setState({
-            isModalOpen1: !this.state.isModalOpen1
+            isModalOpen1: !this.state.isModalOpen1,
+            questionType:this.state.test.testType,
         });
     }
     toggleModal2() {
@@ -102,6 +104,7 @@ class EditTest extends Component {
         event.preventDefault();
         const question = {
             questionNo: this.state.test.questions.length+1,
+            questionType:this.state.questionType,
             question: this.state.question,
             A: this.state.A,
             B: this.state.B,
@@ -157,6 +160,7 @@ class EditTest extends Component {
             subject:this.state.subject,
             // totalMarks: 0,
             startDate: this.state.startDate,
+            testType:this.state.test.testType,
         };
         const bearer = 'Bearer ' + localStorage.getItem('token');
   
@@ -294,23 +298,43 @@ class EditTest extends Component {
             if(test.questions.length)
             {
                 questionlist=test.questions.map((question,index)=>{
-                    return(
-                        <Card className="mt-2">
-                            <CardHeader as="h5" style={{backgroundColor:'rgba(0,186,0,0.5)'}}>Question : {index+1}<span style = {{position:'absolute',right:0}}><span  className="fa fa-edit fa-lg mr-5" onClick={(event)=>this.toggleModalEdit(index)}></span><span className="fa fa-trash fa-lg mr-2"onClick={this.handleQuestionDelete}></span></span></CardHeader>
-                            <CardBody>
-                                <CardTitle>{question.question}</CardTitle>
-                                <CardText>
-                                        A. &emsp;{question.A}  
-                                        <br/>B. &emsp;{question.B}  
-                                        <br/>C. &emsp;{question.C}  
-                                        <br/>D. &emsp;{question.D}  
-                                        <br/><br/>Correct Option. &emsp;{question.ans}   
-                                        <br/>Marks. &emsp;{question.marks}   
-                                </CardText>    
-                            </CardBody>
-                         </Card>
+                    if(question.questionType==='1')
+                        return(
+                            <Card className="mt-2">
+                                <CardHeader as="h5" style={{backgroundColor:'rgba(0,186,0,0.5)'}}>Question : {index+1}<span style = {{position:'absolute',right:0}}><span  className="fa fa-edit fa-lg mr-5" onClick={(event)=>this.toggleModalEdit(index)}></span><span className="fa fa-trash fa-lg mr-2"onClick={this.handleQuestionDelete}></span></span></CardHeader>
+                                <CardBody>
+                                    <CardTitle>{question.question}</CardTitle>
+                                    <CardText>
+                                            A. &emsp;{question.A}  
+                                            <br/>B. &emsp;{question.B}  
+                                            <br/>C. &emsp;{question.C}  
+                                            <br/>D. &emsp;{question.D}  
+                                            <br/><br/>Correct Option. &emsp;{question.ans}   
+                                            <br/>Marks. &emsp;{question.marks}   
+                                    </CardText>    
+                                </CardBody>
+                            </Card>
 
-                    );
+                        );
+                    else if(question.questionType==='2'||question.questionType==='3')
+                        return(
+                            <Card className="mt-2">
+                                <CardHeader as="h5" style={{backgroundColor:'rgba(0,186,0,0.5)'}}>Question : {index+1}<span style = {{position:'absolute',right:0}}><span  className="fa fa-edit fa-lg mr-5" onClick={(event)=>this.toggleModalEdit(index)}></span><span className="fa fa-trash fa-lg mr-2"onClick={this.handleQuestionDelete}></span></span></CardHeader>
+                                <CardBody>
+                                    <CardTitle>{question.question}</CardTitle>
+                                    <CardText> 
+                                            <br/>Marks. &emsp;{question.marks}   
+                                    </CardText>    
+                                </CardBody>
+                            </Card>
+
+                        );
+                    else{
+                        return(
+                            <>Unknown question type.</>
+                        );
+                    }
+                        
                 })
 
             }
@@ -318,6 +342,62 @@ class EditTest extends Component {
             {
                 questionlist=(<h2>You Don't Have Any questions Yet! Add Some Questions Now!!!</h2>)
             }
+
+            var testtype;
+            if(test.testType==='1')
+            {
+                testtype="MCQ Only"
+            }
+            if(test.testType==='2')
+            {
+                testtype="MCQ + Fill in the blanks"
+            }
+            if(test.testType==='3')
+            {
+                testtype="Assignment Type"
+            }
+            var questionTypeInput= this.state.test.testType==='2'?(<>
+                <FormGroup row>
+                    <Label htmlFor="testType" md={2}>Question type </Label>
+                    <Col md={10}>
+                        <Input type="select" id="questionType" name="questionType" value={this.state.questionType} onChange={this.handleInputChange} >
+                        <option value='1'>MCQ </option>
+                        <option value='2'>Fill in the blanks</option>
+                        </Input>
+                    </Col>
+                </FormGroup></>):(<>
+                </>);
+            var optionInput=this.state.questionType==='1'?(<><FormGroup row>
+                <Label htmlFor="A" md={2}>A. </Label>
+                <Col md={10}>
+                    <Input type="text" id="A" name="A" placeholder="Option A" value={this.state.A} onChange={this.handleInputChange} />
+                </Col>
+            </FormGroup>
+            <FormGroup row>
+                <Label htmlFor="B" md={2}>B. </Label>
+                <Col md={10}>
+                    <Input type="text" id="B" name="B" placeholder="Option B" value={this.state.B} onChange={this.handleInputChange} />
+                </Col>
+            </FormGroup>
+            <FormGroup row>
+                <Label htmlFor="C" md={2}>C. </Label>
+                <Col md={10}>
+                    <Input type="text" id="C" name="C" placeholder="Option C" value={this.state.C} onChange={this.handleInputChange} />
+                </Col>
+            </FormGroup>
+            <FormGroup row>
+                <Label htmlFor="D" md={2}>D.</Label>
+                <Col md={10}>
+                    <Input type="text" id="D" name="D" placeholder="Option D" value={this.state.D} onChange={this.handleInputChange} />
+                </Col>
+            </FormGroup>
+            <FormGroup row>
+                <Label htmlFor="ans" md={2}>Correct Option. </Label>
+                <Col md={10}>
+                    <Input type="text" id="ans" name="ans" placeholder="e.g. A" value={this.state.ans} onChange={this.handleInputChange} />
+                </Col>
+            </FormGroup></>):(<></>);
+
             return (
                 <div className="container">
                     <div className="row row-content">
@@ -329,6 +409,7 @@ class EditTest extends Component {
                                         <br/>Subject:  &emsp;{test.subject}
                                         <br/>Duration: &emsp;{test.duration} (in min)
                                         <br/>Start Date: &emsp;{moment.utc(test.startDate).local().format('llll')}
+                                        <br/>Test Type : &emsp;{testtype}
                                     </CardTitle>
                                 </CardBody>
                             </Card>
@@ -353,42 +434,14 @@ class EditTest extends Component {
                         <ModalHeader toggle={this.toggleModal1}><strong>Add Question</strong></ModalHeader>
                         <ModalBody >
                             <Form onSubmit={this.handleAddSubmit}>
+                                {questionTypeInput}
                                 <FormGroup row>
                                     <Label htmlFor="question" md={2}>Question. </Label>
                                     <Col md={10}>
                                         <Input type="text" id="question" name="question" placeholder="Question" value={this.state.question} onChange={this.handleInputChange} />
                                     </Col>
                                 </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="A" md={2}>A. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="A" name="A" placeholder="Option A" value={this.state.A} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="B" md={2}>B. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="B" name="B" placeholder="Option B" value={this.state.B} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="C" md={2}>C. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="C" name="C" placeholder="Option C" value={this.state.C} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="D" md={2}>D.</Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="D" name="D" placeholder="Option D" value={this.state.D} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="ans" md={2}>Correct Option. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="ans" name="ans" placeholder="e.g. A" value={this.state.ans} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
+                                {optionInput}
                                 <FormGroup row>
                                     <Label htmlFor="marks" md={2}>Marks. </Label>
                                     <Col md={10}>

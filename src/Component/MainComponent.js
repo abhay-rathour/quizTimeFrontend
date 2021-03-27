@@ -9,6 +9,8 @@ import Footer from './FooterComponent';
 import Home from './HomeComponent';
 import Student from './StudentComponent';
 import Exam from './ExamComponent';
+import Exam2 from './ExamComponent2';
+import Exam3 from './ExamComponent3';
 import Register from './RegisterComponent';
 import Admin from './AdminComponent';
 import CreateTest from './CreateTestComponent';
@@ -19,7 +21,11 @@ import {adminRegistration,userRegistration}   from '../redux/ActionCreators/Regi
 import {createGroup,fetchGroups,acceptMember,removeReq,removeMem,joinGroup,createTest}from '../redux/ActionCreators/GroupActions.js';
 import Login from './LoginComponent';
 import AdminStudentResult from './AdminTestResultStudent';
+import AdminStudentResult2 from './AdminTestResultStudent2';
+import AdminStudentResult3 from './AdminTestResultStudent3';
 import StudentResult from './StudentTestResultComponent';
+import StudentResult2 from './StudentTestResultComponent2';
+import StudentResult3 from './StudentTestResultComponent3';
 import AdminSummary from './AdminSummaryComponent';
 
 //Adding Redux store with Main State
@@ -111,14 +117,20 @@ class Main extends Component {
                     <Route path="/register" exact component={Register}/>
                     <PrivateRoute exact path="/student" component={Student}/> 
                     <PrivateRoute path="/admin" component={Admin}/>
-                    <PrivateRoute path="/exam/:groupId/:testId" component={Exam}/>
+                    <PrivateRoute path="/exam1/:groupId/:testId" component={Exam}/>
+                    <PrivateRoute path="/exam2/:groupId/:testId" component={Exam2}/>
+                    <PrivateRoute path="/exam3/:groupId/:testId" component={Exam3}/>
                     <PrivateRoute path="/createtest/:groupId" component={CreateTest}/>
                     <PrivateRoute path="/edittest/:groupId/:testId" component={EditTest}/>
                     <PrivateRoute path="/admingroups/:groupId" component={GroupDetailAdmin}/>
                     <PrivateRoute path="/studentgroups/:groupId" component={GroupDetailStudent}/>
-                    <PrivateRoute path="/student/result/:testId" component={StudentResult}/>
-                    <PrivateRoute path="/adminresult/:testId/:studentId" component={AdminStudentResult}/>
-                    <PrivateRoute path="/adminSummary/:testId" component={AdminSummary}/>
+                    <PrivateRoute path="/student/result/1/:testId" component={StudentResult}/>
+                    <PrivateRoute path="/student/result/2/:testId" component={StudentResult2}/>
+                    <PrivateRoute path="/student/result/3/:testId" component={StudentResult3}/>
+                    <PrivateRoute path="/adminresult/1/:testId/:studentId" component={AdminStudentResult}/>
+                    <PrivateRoute path="/adminresult/2/:testId/:studentId" component={AdminStudentResult2}/>
+                    <PrivateRoute path="/adminresult/3/:testId/:studentId" component={AdminStudentResult3}/>
+                    <PrivateRoute path="/adminSummary/:testType/:testId" component={AdminSummary}/>
                     <Redirect to ="/home" />
                 </Switch>
                

@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, CardText, Form, Button, FormGroup, Input, Label } from 'reactstrap';
+import { Card, CardBody, CardHeader, CardText, Form, Button, FormGroup, Input, Label,Col } from 'reactstrap';
 import { Link } from 'react-router-dom';
-// import { TEST } from '../shared/questions';
 import {baseUrl} from '../shared/baseUrl';
 
-class Exam extends Component {
+class Exam2 extends Component {
   constructor(props) {
     super(props)
 
@@ -17,7 +16,6 @@ class Exam extends Component {
         result: undefined,
         answer: '-1',
         testid : '',
-        // studentid : '',
         groupid : '',
         time: {},
         numberOfQuestions: 0,
@@ -30,6 +28,7 @@ class Exam extends Component {
     this.startTimer= this.startTimer.bind(this);
     this.nextQuestion = this.nextQuestion.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleAnswerInput=this.handleAnswerInput.bind(this);
   }
   handleOptionChange(option) {
     if(this.state.answer === option){
@@ -42,11 +41,18 @@ class Exam extends Component {
       })
     }
   }
+  handleAnswerInput(event) {
+    const target = event.target;
+    const value=target.value;
+      this.setState({
+        answer:value
+      })
+    
+  }
   
   componentDidMount() {
     const param = this.props.match.params
     this.setState({
-      // studentid : param.studentId,
       groupid : param.groupId,
       testid : param.testId
     })
@@ -60,7 +66,6 @@ class Exam extends Component {
       credentials: "same-origin"
     })
     .then(response => 
-      // console.log(response);
       response.json())
     .then(res =>{
       console.log(res)
@@ -89,8 +94,9 @@ class Exam extends Component {
   nextQuestion(){
     const bearer= 'Bearer '+localStorage.getItem('token');
     const answer={
-      ans:this.state.answer,
+        ans:this.state.answer
     }
+    console.log(bearer);
     fetch(baseUrl + `tests/${this.state.testid}/next/${this.state.index + 1}`,{
       method:'POST',
       headers: {
@@ -102,10 +108,11 @@ class Exam extends Component {
     })
     .then(response => response.json())
     .then(res =>{
+        var ans=res.questionType==='1'?'-1':'';
       this.setState({
         questions : res,
         index : res.number,
-        answer:'-1',
+        answer:ans, 
         isInstructionsToBeDisplayed : false,
         warningMessage : ''
       })
@@ -119,7 +126,7 @@ class Exam extends Component {
   handleSubmit(){
     const bearer= 'Bearer '+localStorage.getItem('token');
     const answer={
-      ans:this.state.answer,
+        ans:this.state.answer
     }
     fetch(baseUrl + `tests/${this.state.testid}/next/${this.state.index + 1}`,{
       method:'POST',
@@ -141,7 +148,7 @@ class Exam extends Component {
   }
   
   startTimer =()=>{
-    console.log(this.state)
+    // console.log(this.state)
     const countDownTime = (this.state.endTime);
     this.interval=setInterval(()=>{
       const now = Date.now();
@@ -224,7 +231,46 @@ class Exam extends Component {
       )
     }
     else if (question) {
-      return (
+        var input=question.questionType==='1'?(<><Form className="offset-md-1">
+        <FormGroup row >
+          <Label check >
+            <Input type="checkbox" value="A" checked={this.state.answer=== 'A'}  onClick={()=>this.handleOptionChange('A')}/>
+            {question.A}
+          </Label>
+        </FormGroup>
+        <FormGroup row>
+          <Label check >
+            <Input type="checkbox" value="B" checked={this.state.answer=== 'B'} onClick={()=>this.handleOptionChange('B')}/>
+            {question.B}
+          </Label>
+        </FormGroup>
+        <FormGroup row>
+          <Label check >
+            <Input type="checkbox" value="C" checked={this.state.answer=== 'C'} onClick={()=>this.handleOptionChange('C')}/>
+            {question.C}
+          </Label>
+        </FormGroup>
+        <FormGroup row >
+          <Label check>
+            <Input type="checkbox" value="D" checked={this.state.answer=== 'D'} onClick={()=>this.handleOptionChange('D')}/>
+            {question.D}
+          </Label>
+        </FormGroup>
+      </Form></>):(<>
+      <Form>
+      <FormGroup row >
+          {/* <Label htmlFor="answer"> */}
+          <Col md={10}>
+            <Input type="textarea" row='3'id="answer" name='answer' value={this.state.answer} placeholder="Type your Answer" onChange={this.handleAnswerInput}/>
+            {/* {question.A} */}
+            </Col>
+          {/* </Label> */}
+        </FormGroup>
+      </Form>
+      </>);
+            
+            
+        return (
         <div className='container'>
           <div className="row justify-content-center mt-5"><h2>Time Left:- {this.state.time.hour}:{this.state.time.min}:{this.state.time.sec}</h2></div>
           <Card className="mb-5 mt-5">
@@ -232,22 +278,14 @@ class Exam extends Component {
           </Card>
           <CardBody>
             <CardText><h2>{question.question}</h2></CardText>
-            <Form className="offset-md-1">
+            {input}
+            {/* <Form className="offset-md-1">
               <FormGroup row >
                 <Label check >
                   <Input type="checkbox" value="A" checked={this.state.answer=== 'A'}  onClick={()=>this.handleOptionChange('A')}/>
                   {question.A}
                 </Label>
               </FormGroup>
-              {/* <FormGroup check>
-                                <Label check>
-                                    <Input type="checkbox"
-                                        name="admin"
-                                        checked={this.state.agree}
-                                        onChange={this.handleInputChange} /> {' '}
-                                    <strong>Administrator Account</strong>
-                                </Label>
-              </FormGroup> */}
               <FormGroup row>
                 <Label check >
                   <Input type="checkbox" value="B" checked={this.state.answer=== 'B'} onClick={()=>this.handleOptionChange('B')}/>
@@ -266,7 +304,7 @@ class Exam extends Component {
                   {question.D}
                 </Label>
               </FormGroup>
-            </Form>
+            </Form> */}
             <div>
               {/* <Next toggle={(e) => this.toggleNext(e)} nextQuestion={this.nextQuestion} active={disabledNext} />
               <Submit toggle={(e) => this.toggleSubmit(e)} disabled={disabledSubmit} /> */}
@@ -297,4 +335,4 @@ class Exam extends Component {
   }
 }
 
-export default Exam;
+export default Exam2;
