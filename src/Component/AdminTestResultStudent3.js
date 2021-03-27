@@ -31,8 +31,6 @@ class AdminStudentResult extends Component {
         const name = target.name;
         const ind=this.state.questionNumber;
         var testnew=this.state.test;
-        console.log(target);
-        console.log(ind);
         if(name==='questionNumber')
         {
             this.setState({
@@ -42,7 +40,7 @@ class AdminStudentResult extends Component {
         }
         else
         {
-            console.log(testnew);
+            
             testnew.response[ind][name]=value;
 
             this.setState({
@@ -53,7 +51,9 @@ class AdminStudentResult extends Component {
 
         // testnew.response[ind][name]=value;
     }
-    SubmitEvaluate(){
+    SubmitEvaluate(event){
+        event.preventDefault();
+        
         // questionIndex=index;
         // const studentId=this.props.match.params.studentId;
         // const testid=this.props.match.params.testId;
@@ -83,14 +83,17 @@ class AdminStudentResult extends Component {
                 })
             }
             this.setState({test: result, isFetching: false})
+            this.toggleModal();
         })
         .catch(e => {
             console.log(e);
             this.setState({...this.state, isFetching: false});
+            this.toggleModal();
         });
 
     }
-    finishEvaluate(){
+    finishEvaluate(event){
+        event.preventDefault();
         var evaluatedData={
             studentId:this.props.match.params.studentId,
             testid:this.props.match.params.testId
@@ -106,7 +109,7 @@ class AdminStudentResult extends Component {
             body:JSON.stringify(evaluatedData)
         }).then(response => response.json())
         .then(result => {
-            console.log(result)
+            // console.log(result)
             // this.setState({test: result, isFetching: false})
             this.props.history.push(`/adminSummary/3/${evaluatedData.testid}`)
         })
@@ -131,7 +134,7 @@ class AdminStudentResult extends Component {
         })
             .then(response => response.json())
             .then(result => {
-                console.log(result)
+                // console.log(result)
                 this.setState({test: result, isFetching: false})
             })
             .catch(e => {
@@ -150,7 +153,7 @@ class AdminStudentResult extends Component {
         }
         else{
             const test=this.state.test;
-            console.log(test);
+            
             var questionlist;
             if(!test.isQuestionInPDF)
             {
@@ -197,13 +200,11 @@ class AdminStudentResult extends Component {
 
             </>);
             var options=[]
-            console.log(test.totalQuestions);
                     for(var i=0;i<test.totalQuestions;i++)
                     {
                         options.push(<option id={i} value={i}>{i+1}</option>);
                     }
 
-            console.log(options); 
             var questionNumberInput= (<>
             <FormGroup row>
             <Label htmlFor="testType" md={2}>Question Number </Label>
