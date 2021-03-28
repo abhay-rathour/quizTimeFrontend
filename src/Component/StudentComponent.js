@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Table,Form, FormGroup, Input, Modal, ModalHeader, ModalBody, Button} from 'reactstrap';
-import { MDBBtn } from 'mdbreact';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import{connect} from 'react-redux'
@@ -15,7 +14,7 @@ joinGroup:(groupId,req)=>dispatch(joinGroup(groupId,req)),
 fetchGroups:(access)=>dispatch(fetchGroups(access))
 
 })
-// Student Component to display The signed in Students List of oending tests and previous tests 
+// Student Component to display th elist of group the signed in student is part of
 
 class Student extends Component{
     constructor(props){
@@ -81,7 +80,7 @@ class Student extends Component{
                             <td><span className="fa fa-user fa-lg"></span>{group.name}</td>
                             <td>{group.creator.firstname}</td>
                             <td>{group.tests.length}</td>
-                            <td><Link to={`/studentgroups/${group._id}`} ><MDBBtn gradient="aqua" size="sm">Details </MDBBtn></Link></td>
+                            <td><Link to={`/studentgroups/${group._id}`} ><Button outline color="info" size="sm">Details </Button></Link></td>
                         </tr>
                     );
                 })
@@ -101,11 +100,6 @@ class Student extends Component{
                             Groups
                             </NavLink>
                     </NavItem>
-                    {/* <NavItem>
-                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggleTab('2'); }}>
-                            New
-                            </NavLink>
-                    </NavItem> */}
                 </Nav>
     
                 {/* Contents of both tabs */}
@@ -131,45 +125,6 @@ class Student extends Component{
                             </Col>
                         </Row>
                     </TabPane>
-    
-    
-                    {/* <TabPane tabId="2">
-                        <Row>
-                            <Col sm="12">
-                                <Table striped bordered hover>
-                                    <thead>
-                                        <tr>
-                                            <th>Test Name</th>
-                                            <th>Start Time</th>
-                                            <th>Subject</th>
-                                            <th>Max.Duration</th>
-                                            <th>Max.Score</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><span className="fa fa-file fa-lg"></span>TestA</td>
-                                            <td>Jan 21,2021 9:00AM IST</td>
-                                            <td>Maths</td>
-                                            <td>00:60:00</td>
-                                            <td>50
-                                                <Link to="/exam" ><MDBBtn gradient="aqua" size="sm">Test</MDBBtn></Link>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><span className="fa fa-file fa-lg"></span>TestB</td>
-                                            <td>Jan 28,2021 9:00AM IST</td>
-                                            <td>Science</td>
-                                            <td>00:60:00</td>
-                                            <td>50
-                                                <Link to="/exam" ><MDBBtn gradient="aqua" size="sm">Test</MDBBtn></Link>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                            </Col>
-                        </Row>
-                    </TabPane> */}
                 </TabContent>
                 <Button onClick={this.toggleModal} type="submit" color="light-blue">Join A Group</Button>
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
@@ -200,9 +155,6 @@ class Student extends Component{
                                         onChange={this.handleInputChange} />
                                 </Col>
                             </FormGroup>
-                            
-                           
-
                             <FormGroup row >
                                 <Col md={{ size: 10 }}>
                                     <Button type="submit" color="outline-success" size="md" style={{float: 'right'}}>

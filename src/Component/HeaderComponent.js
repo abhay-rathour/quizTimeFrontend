@@ -114,7 +114,7 @@ class Header extends Component {
                            <h4>{this.props.authenticated.user.firstname} </h4>
                         </div>
                         <div className="col-sm-2 justify-contents-left">
-                            <Button  size="sm" onClick={this.props.logoutUser}> LogOut </Button>
+                            <Button  color="pink" size="sm" onClick={this.props.logoutUser}> LogOut </Button>
                         </div>
                     </div>
                 ); 
@@ -125,7 +125,7 @@ class Header extends Component {
                 <div className="row "> 
                    <div  className="col-sm-2 ml-auto">
                        <Link to="/login">
-                        <Button  color="primary">
+                        <Button  color="orange">
                            Login
                         </Button> 
                         </Link>  

@@ -4,7 +4,9 @@ import {  Card, CardHeader, CardBody ,CardTitle,CardText,Form,FormGroup,Input,Bu
 import {baseUrl} from '../shared/baseUrl';
 
 
-class AdminStudentResult extends Component {
+// Component to display Test type 2 response sheet of  student and option to give marks for fill up type answers and finish evaluation
+
+class AdminStudentResult2 extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -30,17 +32,21 @@ class AdminStudentResult extends Component {
            test:testnew
         });
     }
-    SubmitEvaluate(index){
+    SubmitEvaluate(event){
+        event.preventDefault();
+        const ind=event.target.dataset.tag;
         // questionIndex=index;
         // const studentId=this.props.match.params.studentId;
         // const testid=this.props.match.params.testId;
+        
         var evaluatedData={
-            marks:this.state.test.response[index].marks,
-            remarks:this.state.test.response[index].remarks,
-            questionIndex:index,
+            marks:this.state.test.response[ind].marks,
+            remarks:this.state.test.response[ind].remarks,
+            questionIndex:ind,
             studentId:this.props.match.params.studentId,
             testid:this.props.match.params.testId
         }
+        console.log(evaluatedData);
         const bearer= "Bearer "+localStorage.getItem('token');
         fetch(baseUrl+'admin/evaluate',{
             method:'POST',
@@ -177,7 +183,7 @@ class AdminStudentResult extends Component {
                                         <FormGroup row>
                                             <Input type="text" name="remarks" id="remarks" data-tag={index} value={test.response[index].remarks} onChange={this.handleEvaluate} placeholder="Remarks"/>
                                         </FormGroup>
-                                        <Button type="submit" className="btn-success" onClick={()=>this.SubmitEvaluate(index)}>Evaluate</Button>
+                                        <Button type="submit" data-tag={index} className="btn-success" onClick={this.SubmitEvaluate}>Evaluate</Button>
                                     </Form>
 
                                 </CardBody>
@@ -238,4 +244,4 @@ class AdminStudentResult extends Component {
         
     }
 }
-export default AdminStudentResult;
+export default AdminStudentResult2;

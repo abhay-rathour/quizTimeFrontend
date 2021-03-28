@@ -4,6 +4,10 @@ import { Link } from 'react-router-dom';
 // import { TEST } from '../shared/questions';
 import {baseUrl} from '../shared/baseUrl';
 
+
+//A component to create exam interface of MCQ type exam
+
+
 class Exam extends Component {
   constructor(props) {
     super(props)

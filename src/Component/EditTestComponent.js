@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import {baseUrl}from '../shared/baseUrl';
 import moment from 'moment';
 
+//A component to add questions while creating test and editing test details and questions
+
 
 class EditTest extends Component {
     constructor(props) {
@@ -154,12 +156,15 @@ class EditTest extends Component {
     }
     handleEditTestDetails(event) {
         event.preventDefault();
+        var date=new Date(this.state.startDate);
+
+        var adjustedDate=moment.utc(date).toISOString(true);
+        console.log(adjustedDate);
         const testnew = {
             title: this.state.title,
             duration: this.state.duration,
             subject:this.state.subject,
-            // totalMarks: 0,
-            startDate: this.state.startDate,
+            startDate: adjustedDate,
             testType:this.state.test.testType,
         };
         const bearer = 'Bearer ' + localStorage.getItem('token');
@@ -360,7 +365,7 @@ class EditTest extends Component {
                 <FormGroup row>
                     <Label htmlFor="testType" md={2}>Question type </Label>
                     <Col md={10}>
-                        <Input type="select" id="questionType" name="questionType" value={this.state.questionType} onChange={this.handleInputChange} >
+                        <Input type="select" id="questionType" name="questionType" value={this.state.questionType} onChange={this.handleInputChange} required>
                         <option value='1'>MCQ </option>
                         <option value='2'>Fill in the blanks</option>
                         </Input>
@@ -370,31 +375,31 @@ class EditTest extends Component {
             var optionInput=this.state.questionType==='1'?(<><FormGroup row>
                 <Label htmlFor="A" md={2}>A. </Label>
                 <Col md={10}>
-                    <Input type="text" id="A" name="A" placeholder="Option A" value={this.state.A} onChange={this.handleInputChange} />
+                    <Input type="text" id="A" name="A" placeholder="Option A" value={this.state.A} onChange={this.handleInputChange} required/>
                 </Col>
             </FormGroup>
             <FormGroup row>
                 <Label htmlFor="B" md={2}>B. </Label>
                 <Col md={10}>
-                    <Input type="text" id="B" name="B" placeholder="Option B" value={this.state.B} onChange={this.handleInputChange} />
+                    <Input type="text" id="B" name="B" placeholder="Option B" value={this.state.B} onChange={this.handleInputChange} required/>
                 </Col>
             </FormGroup>
             <FormGroup row>
                 <Label htmlFor="C" md={2}>C. </Label>
                 <Col md={10}>
-                    <Input type="text" id="C" name="C" placeholder="Option C" value={this.state.C} onChange={this.handleInputChange} />
+                    <Input type="text" id="C" name="C" placeholder="Option C" value={this.state.C} onChange={this.handleInputChange} required />
                 </Col>
             </FormGroup>
             <FormGroup row>
                 <Label htmlFor="D" md={2}>D.</Label>
                 <Col md={10}>
-                    <Input type="text" id="D" name="D" placeholder="Option D" value={this.state.D} onChange={this.handleInputChange} />
+                    <Input type="text" id="D" name="D" placeholder="Option D" value={this.state.D} onChange={this.handleInputChange} required />
                 </Col>
             </FormGroup>
             <FormGroup row>
                 <Label htmlFor="ans" md={2}>Correct Option. </Label>
                 <Col md={10}>
-                    <Input type="text" id="ans" name="ans" placeholder="e.g. A" value={this.state.ans} onChange={this.handleInputChange} />
+                    <Input type="text" id="ans" name="ans" placeholder="e.g. A" value={this.state.ans} onChange={this.handleInputChange}required />
                 </Col>
             </FormGroup></>):(<></>);
 
@@ -438,14 +443,14 @@ class EditTest extends Component {
                                 <FormGroup row>
                                     <Label htmlFor="question" md={2}>Question. </Label>
                                     <Col md={10}>
-                                        <Input type="text" id="question" name="question" placeholder="Question" value={this.state.question} onChange={this.handleInputChange} />
+                                        <Input type="text" id="question" name="question" placeholder="Question" value={this.state.question} onChange={this.handleInputChange} required/>
                                     </Col>
                                 </FormGroup>
                                 {optionInput}
                                 <FormGroup row>
                                     <Label htmlFor="marks" md={2}>Marks. </Label>
                                     <Col md={10}>
-                                        <Input type="number" id="marks" name="marks" placeholder="Default is 1" value={this.state.marks} onChange={this.handleInputChange} />
+                                        <Input type="number" id="marks" name="marks" placeholder="Default is 1" value={this.state.marks} onChange={this.handleInputChange} required />
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
@@ -462,25 +467,25 @@ class EditTest extends Component {
                                 <FormGroup row>
                                     <Label htmlFor="title" md={2}>Title. </Label>
                                     <Col md={10}>
-                                        <Input type="text" id="title" name="title" placeholder="Title" value={this.state.title} onChange={this.handleInputChange} />
+                                        <Input type="text" id="title" name="title" placeholder="Title" value={this.state.title} onChange={this.handleInputChange} required />
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="subject" md={2}>Subject. </Label>
                                     <Col md={10}>
-                                        <Input type="text" id="subject" name="subject" placeholder="Subject" value={this.state.subject} onChange={this.handleInputChange} />
+                                        <Input type="text" id="subject" name="subject" placeholder="Subject" value={this.state.subject} onChange={this.handleInputChange} required/>
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="duration" md={2}>Duration. </Label>
                                     <Col md={10}>
-                                        <Input type="text" id="duration" name="duration" placeholder="Duration in Minutes" value={this.state.duration} onChange={this.handleInputChange} />
+                                        <Input type="text" id="duration" name="duration" placeholder="Duration in Minutes" value={this.state.duration} onChange={this.handleInputChange} required/>
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="startDate" md={2}>Tentative Test Date </Label>
                                     <Col md={10}>
-                                        <Input type="datetime-local" id="startDate" name="startDate" placeholder="Tentative Start Date" value={this.state.startDate} onChange={this.handleInputChange} />
+                                        <Input type="datetime-local" id="startDate" name="startDate" placeholder="Tentative Start Date" value={this.state.startDate} onChange={this.handleInputChange} required/>
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
@@ -490,13 +495,13 @@ class EditTest extends Component {
                         </ModalBody>
                     </Modal>
                     <Modal className="modal-lg" isOpen={this.state.isModalEditOpen} toggle={this.toggleModalEdit}>
-                        <ModalHeader toggle={this.toggleModal1}><strong>Edit Question</strong></ModalHeader>
+                        <ModalHeader toggle={this.toggleModalEdit}><strong>Edit Question</strong></ModalHeader>
                         <ModalBody >
                             <Form onSubmit={this.handleQuestionEdit}>
                                 <FormGroup row>
                                     <Label htmlFor="question" md={2}>Question. </Label>
                                     <Col md={10}>
-                                        <Input type="text" id="question" name="question" placeholder="Question" value={this.state.question} onChange={this.handleInputChange} />
+                                        <Input type="text" id="question" name="question" placeholder="Question" value={this.state.question} onChange={this.handleInputChange}/>
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>

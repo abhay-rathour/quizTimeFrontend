@@ -3,6 +3,10 @@ import { Card, CardBody, CardHeader, CardText, Form, Button, FormGroup, Input, L
 import { Link } from 'react-router-dom';
 import {baseUrl} from '../shared/baseUrl';
 
+//A component to create exam interface of MCQ+FillUp type exam
+
+
+
 class Exam2 extends Component {
   constructor(props) {
     super(props)

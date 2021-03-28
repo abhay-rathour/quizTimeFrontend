@@ -3,6 +3,9 @@ import { Card, CardBody, CardHeader, CardText, Button} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import {baseUrl} from '../shared/baseUrl';
 
+//A component to create exam interface of Assignment type Exam where 
+// student is diplayed pdf of question paper or list of question and he is asked to enter answers
+
 class Exam3 extends Component {
   constructor(props) {
     super(props)

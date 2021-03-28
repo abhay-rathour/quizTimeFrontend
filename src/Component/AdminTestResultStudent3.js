@@ -4,7 +4,10 @@ import {  Card, CardHeader, CardBody ,CardTitle,Form,FormGroup,Input,Button,Col,
 import {baseUrl} from '../shared/baseUrl';
 
 
-class AdminStudentResult extends Component {
+// Component to display Test type 3 response sheet of  student and option to give marks for  answers and finish evaluation
+
+
+class AdminStudentResult3 extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -289,4 +292,4 @@ class AdminStudentResult extends Component {
         
     }
 }
-export default AdminStudentResult;
+export default AdminStudentResult3;

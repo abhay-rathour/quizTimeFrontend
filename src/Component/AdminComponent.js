@@ -1,6 +1,5 @@
 import React, {Component } from 'react';
 import { TabContent, TabPane,  Row, Col, Table, Label, Form, FormGroup, Input, Modal, ModalHeader, ModalBody, Button} from 'reactstrap';
-import { MDBBtn} from 'mdbreact';
 import { Link } from 'react-router-dom';
 import {connect} from 'react-redux';
 import {createGroup,acceptMember,removeReq,removeMem,joinGroup,createTest,fetchGroups}from '../redux/ActionCreators/GroupActions.js';
@@ -25,10 +24,9 @@ function GroupRows ({group}){
         <tr key={group._id}>
             <td><span className="fa fa-user fa-lg"></span>{group.name}</td>
             <td>{group.members.length}</td>
-            {/* <td><Link to="/addNew" ><MDBBtn gradient="aqua" size="sm"> Add </MDBBtn></Link></td> */}
             <td>{group.tests.length}</td>
-            <td><Link to={`/createtest/${group._id}`}><MDBBtn gradient="aqua" size="sm"> Create </MDBBtn></Link></td>
-            <td><Link to={`/admingroups/${group._id}`} ><MDBBtn gradient="aqua" size="sm">Details </MDBBtn></Link></td>
+            <td><Link to={`/createtest/${group._id}`}><Button outline color="info" size="sm">Create</Button></Link></td>
+            <td><Link to={`/admingroups/${group._id}`} ><Button outline color="primary" size="sm">Details</Button></Link></td>
         </tr>
     );
 }

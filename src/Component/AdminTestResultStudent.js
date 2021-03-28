@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import {  Card, CardHeader, CardBody ,CardTitle,CardText} from 'reactstrap';
 import {baseUrl} from '../shared/baseUrl';
 
+//A component to display reponses of test type 1 MCQ Type
+
 
 class AdminStudentResult extends Component {
     constructor(props) {

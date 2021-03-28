@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Table, Button,} from 'reactstrap';
-import { MDBBtn } from 'mdbreact';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import {acceptMember,removeMem,removeReq,DeleteGroup} from '../redux/ActionCreators/GroupActions'
 import {baseUrl} from '../shared/baseUrl';
 import moment from 'moment';
+
+
+
+///This component shows the groups specifics of a given group created by admin
+//He can add members and delete members and create test from this component 
 
 
 const mapDispatchToProps = (dispatch)=>({
@@ -247,8 +251,8 @@ class GroupDetailAdmin extends Component {
                                 <td>{sno}</td>
                                 <td>{req.name}</td>
                                 <td>{req.uniqueID}</td>
-                                <td><MDBBtn gradient="aqua" size="sm" onClick={()=>this.handleRemoveMember(req)}> Remove Member </MDBBtn></td>
-                                <td><Link to="#" ><MDBBtn gradient="aqua" size="sm"> Details </MDBBtn></Link></td>
+                                <td><Button outline color="danger" size="sm" onClick={()=>this.handleRemoveMember(req)}> Remove Member </Button></td>
+                                <td><Link to="#" ><Button outline color="primary" size="sm"> Details </Button></Link></td>
                             </tr>
                         );
                     })
@@ -286,10 +290,10 @@ class GroupDetailAdmin extends Component {
                             <td>{testtype}</td>
                             <td>{test.totalMarks}</td>
                             <td>
-                                <Link to={`/edittest/${group._id}/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Edit</MDBBtn></Link>
+                                <Link to={`/edittest/${group._id}/${test._id}`} ><Button outline color="info" size="sm">Edit</Button></Link>
                             </td>
                             <td>
-                                <Link to={`/adminSummary/${test.testType}/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Click</MDBBtn></Link>
+                                <Link to={`/adminSummary/${test.testType}/${test._id}`} ><Button outline color="primary" size="sm">Click</Button></Link>
                             </td>
                         </tr>
 
@@ -393,7 +397,7 @@ class GroupDetailAdmin extends Component {
             
                                     </Col>
                                 </Row>
-                                <Link to={`/createtest/${group._id}`} ><MDBBtn gradient="aqua" size="sm"> Create a New </MDBBtn></Link>
+                                <Link to={`/createtest/${group._id}`} ><Button outline color="pink" size="sm"> Create a New </Button></Link>
                             </TabPane>
                             <TabPane tabId="4">
                                 <Row>
@@ -408,7 +412,7 @@ class GroupDetailAdmin extends Component {
                                         
                                     </Col>
                                 </Row>
-                                <MDBBtn gradient="aqua" size="sm" onClick={this.handleDeleteGroup}> Delete this Group </MDBBtn>
+                                <Button outline color="red"  size="sm" onClick={this.handleDeleteGroup}> Delete this Group </Button>
             
                             </TabPane>
                         </TabContent>

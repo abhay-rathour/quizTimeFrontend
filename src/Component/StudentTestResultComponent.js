@@ -4,6 +4,8 @@ import {baseUrl} from '../shared/baseUrl';
 import {Link} from 'react-router-dom'
 import  moment from 'moment';
 
+// A response sheet display component of test type 1
+
 class StudentResult extends Component {
     constructor(props) {
         super(props);

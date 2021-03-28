@@ -5,6 +5,8 @@ import {baseUrl} from '../shared/baseUrl';
 import {Link} from 'react-router-dom'
 
 
+// A response sheet display component of test type 2
+
 class AdminStudentResult extends Component {
     constructor(props) {
         super(props);

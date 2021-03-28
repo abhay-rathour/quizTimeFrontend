@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Button, Col,  Label, Input, Form, FormGroup} from 'reactstrap';
 import axios from 'axios'
 import {baseUrl}from '../shared/baseUrl';
+import moment from 'moment';
+
+//A component to Initialise a test and upload pdf of assignment type exam if you want otherwise a link to edit test component to add questions
 
 class CreateTest extends Component {
     constructor(props) {
@@ -36,11 +39,15 @@ class CreateTest extends Component {
     }
     handleCreateSubmit(event) {
         event.preventDefault();
+        var date=new Date(this.state.startDate);
+        var adjustedDate=moment.utc(date).toISOString(true);
+        console.log(date);
         const testnew = {
+
             title: this.state.title,
             duration: this.state.duration,
             subject:this.state.subject,
-            startDate: this.state.startDate,
+            startDate: adjustedDate,
             testType:this.state.testType,
             isQuestionInPDF:this.state.papersubmit,
             totalQuestions:this.state.totalQuestions,
@@ -112,17 +119,17 @@ class CreateTest extends Component {
             <>  <FormGroup row>
                     <Label htmlFor="totalQuestions" md={2}>No. of Questions. </Label>
                     <Col md>
-                        <Input type="number" id="totalQuestions" name="totalQuestions" placeholder="Total Number of Questions" value={this.state.totalQuestions} onChange={this.handleInputChange} />
+                        <Input type="number" id="totalQuestions" name="totalQuestions" placeholder="Total Number of Questions" value={this.state.totalQuestions} onChange={this.handleInputChange} required/>
                     </Col>
                 </FormGroup>
                 <FormGroup row>
                     <Label htmlFor="totalMarks" md={2}>Total Marks. </Label>
                     <Col md>
-                        <Input type="number" id="totalMarks" name="totalMarks" placeholder="Total Marks" value={this.state.totalMarks} onChange={this.handleInputChange} />
+                        <Input type="number" id="totalMarks" name="totalMarks" placeholder="Total Marks" value={this.state.totalMarks} onChange={this.handleInputChange} required/>
                     </Col>
                 </FormGroup>
                 <FormGroup>
-                <input type='file' id="exampleFormControlFile1" name="paper"label="Paper" onChange={this.handleFileChange}/>
+                <input type='file' id="exampleFormControlFile1" name="paper"label="Paper" onChange={this.handleFileChange} required/>
                 </FormGroup>
                 <FormGroup row>
                     <Button disabled={(this.state.isTestInitialised)} type="submit" color="primary">Submit</Button>
@@ -146,25 +153,25 @@ class CreateTest extends Component {
                                 <FormGroup row>
                                     <Label htmlFor="subject" md={2}>Subject. </Label>
                                     <Col md={10}>
-                                        <Input type="text" id="subject" name="subject" placeholder="Subject" value={this.state.subject} onChange={this.handleInputChange} />
+                                        <Input type="text" id="subject" name="subject" placeholder="Subject" value={this.state.subject} onChange={this.handleInputChange} required/>
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="duration" md={2}>Duration. </Label>
                                     <Col md={10}>
-                                        <Input type="text" id="duration" name="duration" placeholder="Duration in Minutes" value={this.state.duration} onChange={this.handleInputChange} />
+                                        <Input type="text" id="duration" name="duration" placeholder="Duration in Minutes" value={this.state.duration} onChange={this.handleInputChange} required />
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="startDate" md={2}>Tentative Test Date </Label>
                                     <Col md={10}>
-                                        <Input type="datetime-local" id="startDate" name="startDate" placeholder="Tentative Start Date" value={this.state.startDate} onChange={this.handleInputChange} />
+                                        <Input type="datetime-local" id="startDate" name="startDate" placeholder="Tentative Start Date" value={this.state.startDate} onChange={this.handleInputChange}required />
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="testType" md={2}>Test type </Label>
                                     <Col md={10}>
-                                        <Input type="select" id="testType" name="testType" value={this.state.testType} onChange={this.handleInputChange} >
+                                        <Input type="select" id="testType" name="testType" value={this.state.testType} onChange={this.handleInputChange} required >
                                         <option value='1'>MCQ Only</option>
                                         <option value='2'>MCQ + Fill-ups</option>
                                         <option value='3'>Assignment type</option>
@@ -173,16 +180,6 @@ class CreateTest extends Component {
                                 </FormGroup>
                                 {paper}
                                 {fileupload}
-                                {/* <FormGroup row>
-                                    <Label htmlFor="testType" md={2}>Test type </Label>
-                                    <Col md={10}>
-                                        <Input type="select" id="testType" name="testType" value={this.state.testType} onChange={this.handleInputChange} >
-                                        <option value='1'>MCQ Only</option>
-                                        <option value='2'>MCQ + Fill-ups</option>
-                                        <option value='3'>Assignment type</option>
-                                        </Input>
-                                    </Col>
-                                </FormGroup> */}
                             </Form>
                         </div>
                     </div>

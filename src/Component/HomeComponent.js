@@ -1,5 +1,5 @@
 import React, { Component ,Fragment} from 'react';
-import {MDBBtn } from 'mdbreact';
+import {Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 //Home Component contains display and links provided on Home page
@@ -21,7 +21,11 @@ class Home extends Component {
                             
                             <div className="col-12 col-md-3 ml-auto">
                                 {/* <div className="col-sm-5"> */}
-                                <Link to ="/register" ><MDBBtn gradient="purple" size="m">Register Now</MDBBtn></Link>
+                                <Link to ="/register" >   
+                                    <Button color="info">
+                                        REGISTER NOW
+                                    </Button>
+                                </Link>
                                 {/* </div> */}
                             </div>
                     </div>

@@ -2,10 +2,15 @@ import React, { Component} from 'react';
 import { connect } from 'react-redux';
 import {  Card, CardBody, CardHeader,Form, FormGroup, Col, Input,Button,Label} from 'reactstrap';
 import {loginUser}from '../redux/ActionCreators/LoginActions';
+import {Redirect} from 'react-router-dom'
 
 const mapDispatchToProps=(dispatch)=>({
     loginUser: (creds) => dispatch(loginUser(creds)),
     
+});
+const mapStateToProps=state=>({
+    auth:state.auth
+
 });
 
 class Login extends Component{
@@ -39,9 +44,19 @@ class Login extends Component{
         event.preventDefault();
         console.log(user);
         this.props.loginUser(user);  
-        this.props.history.push('/'); 
+        // this.props.history.push('/'); 
     }
     render(){
+        if(this.props.auth.isAuthenticated)
+        {
+            return(
+                //Redirect to home page
+            <Redirect to ='/home'/>
+
+            );
+            
+        }
+        else{
             return(
                 <div className='container'>
                     <div className='row justify-content-center'>
@@ -55,7 +70,7 @@ class Login extends Component{
                                             <Input type="text" id="username" name="username"
                                                 placeholder="Username"
                                                 value={this.state.email}
-                                                onChange={this.handleInputChange} />
+                                                onChange={this.handleInputChange} required />
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
@@ -63,7 +78,7 @@ class Login extends Component{
                                             <Input type="password" id="password" name="password"
                                                 placeholder="Password"
                                                 value={this.state.password}
-                                                onChange={this.handleInputChange} />
+                                                onChange={this.handleInputChange} required />
                                         </Col>
                                     </FormGroup>
                                     <FormGroup check>
@@ -89,6 +104,8 @@ class Login extends Component{
                 </div>
               </div>
             );
+        }
+
     }
 }
-export default connect(null,mapDispatchToProps)(Login);
+export default connect(mapStateToProps,mapDispatchToProps)(Login);

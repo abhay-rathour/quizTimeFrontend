@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import {  Card, CardHeader, CardBody ,CardTitle,CardText,Button} from 'reactstrap';
 import {baseUrl} from '../shared/baseUrl';
 import {Link} from 'react-router-dom'
+
+// A response sheet display component of test type 1
+
 class StudentResult3 extends Component {
     constructor(props) {
         super(props);

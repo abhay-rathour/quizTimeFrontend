@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Table, } from 'reactstrap';
-import { MDBBtn } from 'mdbreact';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Table,Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
-import {connect} from 'react-redux';
 import {baseUrl} from '../shared/baseUrl';
 import moment from 'moment';
+///This component shows the list of tests present in a specific group for student to give
+//From this component he can start exam or see response sheet if test is over and evaluated
 
-
-const mapDispatchToProps = (dispatch)=>({
-
-    
-});
 
 
 
@@ -104,7 +99,7 @@ class GroupDetailStudent extends Component {
                                 <td>{testtype}</td>
                                 <td>{test.totalMarks}</td>
                                 <td>
-                                    <Link to={`/student/result/${test.testType}/${test._id}`} ><MDBBtn gradient="aqua" size="sm">Results</MDBBtn></Link>
+                                    <Link to={`/student/result/${test.testType}/${test._id}`} ><Button  color="success" size="sm">Results</Button></Link>
                                 </td>
                             </tr>
     
@@ -133,7 +128,7 @@ class GroupDetailStudent extends Component {
                                 <td>{testtype}</td>
                                 <td>{test.totalMarks}</td>
                                 <td>
-                                    <Link to = {examlink} ><MDBBtn gradient="aqua" size="sm">Start Test</MDBBtn></Link>
+                                    <Link to = {examlink} ><Button outline color="grey" size="sm">Start Test</Button></Link>
                                 </td>
                             </tr>
     
@@ -214,4 +209,4 @@ class GroupDetailStudent extends Component {
     
 }
 
-export default connect(null,mapDispatchToProps)(GroupDetailStudent);
+export default GroupDetailStudent;

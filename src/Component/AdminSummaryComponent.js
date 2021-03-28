@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import {  Table} from 'reactstrap';
-import { MDBBtn } from 'mdbreact';
+import {  Table,Button} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import {baseUrl} from '../shared/baseUrl';
+
+//Component to generate test summary. this component fetches student list who attempted the test and link to see their reponses
+
 
 class AdminSummary extends Component {
     
@@ -60,7 +62,7 @@ class AdminSummary extends Component {
                             <td>{user.marks}</td>
                             <td>{user.totalMarks}</td>
                             <td>
-                                <Link to={`/adminresult/${this.props.match.params.testType}/${this.props.match.params.testId}/${user.userID}`} ><MDBBtn gradient="aqua" size="sm">See Responses</MDBBtn></Link>
+                                <Link to={`/adminresult/${this.props.match.params.testType}/${this.props.match.params.testId}/${user.userID}`} ><Button color="yellow" size="sm">See Responses</Button></Link>
                             </td>
                         </tr>
 
