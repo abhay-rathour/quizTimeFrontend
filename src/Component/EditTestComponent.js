@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Button, Col,  Label, Input, Form, FormGroup, Card, CardHeader, CardBody ,CardTitle,Modal,ModalHeader,ModalBody, CardText} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import {baseUrl}from '../shared/baseUrl';
+import AuthIFrame from './AuthIFrame';
 import moment from 'moment';
+import axios from 'axios';
 
 //A component to add questions while creating test and editing test details and questions
 
@@ -26,19 +28,29 @@ class EditTest extends Component {
             test: [],
             isTestInitialised: false,
             questionstotal: 0,
+            totalMarks:0,
+            totalQuestions:0,
             isModalOpen1: false,
             isModalOpen2: false,
+            isModalChangePDFOpen: false,
             isModalEditOpen: false,
             isFetching:true,
+            token:'',
+            selectedFile:null,
         }
         this.handleAddSubmit = this.handleAddSubmit.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.toggleModal1=this.toggleModal1.bind(this);
         this.toggleModal2=this.toggleModal2.bind(this);
+        this.toggleModalChangePDF=this.toggleModalChangePDF.bind(this);
         this.toggleModalEdit=this.toggleModalEdit.bind(this);
         this.fetchTestwithID=this.fetchTestwithID.bind(this);
         this.handleEditTestDetails=this.handleEditTestDetails.bind(this);
         this.handleQuestionEdit=this.handleQuestionEdit.bind(this);
+        this.handleQuestionDelete=this.handleQuestionDelete.bind(this);
+        this.handleChangePDF=this.handleChangePDF.bind(this);
+        this.handleFileChange=this.handleFileChange.bind(this);
+        this.handleTestDelete=this.handleTestDelete.bind(this);
     }
 
     toggleModal1() {
@@ -80,17 +92,52 @@ class EditTest extends Component {
         else
         {
             const question=this.state.test.questions[questionIndex];
+            if(question.questionType==='1')
+            {
+                this.setState({
+                    isModalEditOpen: !this.state.isModalEditOpen,
+                    question: question.question,
+                    questionType:question.questionType,
+                    A: question.A,
+                    B: question.B,
+                    C: question.C,
+                    D: question.D,
+                    marks: question.marks,
+                    ans: question.ans,
+                    questionIndex:questionIndex
+                });
+
+            }
+            else{
+                this.setState({
+                    isModalEditOpen: !this.state.isModalEditOpen,
+                    question: question.question,
+                    questionType:question.questionType,
+                    marks: question.marks,
+                    questionIndex:questionIndex
+                });
+                
+            }
+           
+        }
+        
+    }
+
+    toggleModalChangePDF() {
+        if(this.state.isModalChangePDFOpen)
+        {
             this.setState({
-                isModalEditOpen: !this.state.isModalEditOpen,
-                question: question.question,
-                A: question.A,
-                B: question.B,
-                C: question.C,
-                D: question.D,
-                marks: question.marks,
-                ans: question.ans,
-                questionIndex:questionIndex
+                isModalChangePDFOpen: !this.state.isModalChangePDFOpen,
             });
+        }
+        else
+        {
+            this.setState({
+                isModalChangePDFOpen: !this.state.isModalChangePDFOpen,
+                totalQuestions:this.state.test.totalQuestions,
+                totalMarks:this.state.test.totalMarks
+            });
+
         }
         
     }
@@ -102,6 +149,33 @@ class EditTest extends Component {
             [name]: value
         });
     }
+    handleFileChange(event){
+        this.setState({ selectedFile: event.target.files[0] });
+    }
+    handleChangePDF(event){
+        event.preventDefault();
+        var formData = new FormData()
+        formData.append('file', this.state.selectedFile)
+        formData.append('totalQuestions',this.state.totalQuestions)
+        formData.append('totalMarks',this.state.totalMarks)
+        axios({
+            method: 'post',
+            url: `${baseUrl}createtest/uploadAssignment/${this.state.test._id}`,
+            data: formData,
+            headers: {
+                Authorization: `Bearer ${this.state.token}`
+            }
+        })
+        .then(res =>{ 
+            console.log(res);
+            this.toggleModalChangePDF();
+            this.setState({
+                selectedFile:null
+            });
+        }).catch(err => console.log(err));
+
+    }
+
     handleAddSubmit(event) {
         event.preventDefault();
         const question = {
@@ -116,7 +190,7 @@ class EditTest extends Component {
             ans: this.state.ans,
             totalMarks:this.state.test.totalMarks
         }
-        const bearer = 'Bearer ' + localStorage.getItem('token');
+        const bearer = 'Bearer ' + this.state.token;
         fetch(baseUrl+'createtest/'+this.state.test._id+'/question', {
             method: "POST",
             body: JSON.stringify(question),
@@ -167,7 +241,7 @@ class EditTest extends Component {
             startDate: adjustedDate,
             testType:this.state.test.testType,
         };
-        const bearer = 'Bearer ' + localStorage.getItem('token');
+        const bearer = 'Bearer ' + this.state.token;
   
         fetch(baseUrl+'createtest/edit/'+this.state.test._id, {
             method: "PUT",
@@ -201,20 +275,73 @@ class EditTest extends Component {
         })
         .catch(error => console.log(error));
     }
+    handleTestDelete(event) {
+        event.preventDefault();
+        var y=window.confirm(`Do you really want to delete the test? The process is irreversible`);
+        if(y)
+        {
+        const bearer = 'Bearer ' + this.state.token;
+        fetch(baseUrl+'createtest/edit/'+this.state.test._id, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': bearer
+            },
+            body:JSON.stringify({groupId:this.props.match.params.groupId}),
+            credentials: "same-origin"
+        })
+        .then(response => {
+            if (response) {
+                return response;
+            } 
+            else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+        },
+        error => {
+            throw error;
+        })
+        .then(response => response.json())
+        .then(response => { console.log('Test Deleted', response.Mssg);
+                        this.props.history.push('/admingroups/'+this.props.match.params.groupId)
+            // this.toggleModal2();
+        })
+        .catch(error => console.log(error));
+    }
+    }
     handleQuestionEdit(event){
         event.preventDefault();
-        var question={
-            questionNo: this.state.questionIndex+1,
-            question: this.state.question,
-            A: this.state.A,
-            B: this.state.B,
-            C: this.state.C,
-            D: this.state.D,
-            marks: this.state.marks,
-            ans: this.state.ans,
-            totalMarks:this.state.test.totalMarks-this.state.test.questions[this.state.questionIndex].marks+this.state.marks
+        var questionType=this.state.questionType;
+        var question;
+        if(questionType==='1')
+        {
+            question={
+                questionType:'1',
+                questionNo: this.state.questionIndex+1,
+                question: this.state.question,
+                A: this.state.A,
+                B: this.state.B,
+                C: this.state.C,
+                D: this.state.D,
+                marks: this.state.marks,
+                ans: this.state.ans,
+                totalMarks:Number(this.state.test.totalMarks)-Number(this.state.test.questions[this.state.questionIndex].marks)+Number(this.state.marks)
+            }
         }
-        const bearer = 'Bearer ' + localStorage.getItem('token');
+        else{
+            question={
+                questionType:this.state.questionType,
+                questionNo: this.state.questionIndex+1,
+                question: this.state.question,
+                marks: this.state.marks,
+                totalMarks:Number(this.state.test.totalMarks)-Number(this.state.test.questions[this.state.questionIndex].marks)+Number(this.state.marks)
+            }
+            
+        }
+        
+        const bearer = 'Bearer ' + this.state.token;
         fetch(baseUrl+'createtest/'+this.state.test._id+'/question', {
             method: "PUT",
             body: JSON.stringify(question),
@@ -253,10 +380,54 @@ class EditTest extends Component {
         .catch(error => console.log(error));
         
     }
+    handleQuestionDelete(index)
+    {
+        console.log(index);
+        var y=window.confirm(`Do you really want to delete the question ${index+1}?`);
+        if(y)
+        {
+            const bearer = 'Bearer ' + this.state.token;
+            fetch(baseUrl+'createtest/'+this.state.test._id+'/question', {
+                method: "DELETE",
+                body: JSON.stringify({questionNo: index+1}),
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': bearer
+                },
+                credentials: "same-origin"
+            })
+            .then(response => {
+                if (response) {
+                    return response;
+                } 
+                else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+                }
+            },
+            error => {
+                throw error;
+            })
+            .then(response => response.json())
+            .then(testrecieved => { 
+                console.log('Question deleted and new paper is ', testrecieved); 
+                this.setState({
+                    test: testrecieved,
+                }); 
+            })
+            .catch(error => console.log(error));
+            // this.props.DeleteGroup(this.state.group._id);
+            // this.props.history.push('/');
+        }
+        
+
+    }
 
     fetchTestwithID = (testId) => {
-        const bearer= 'Bearer '+localStorage.getItem('token');
-        this.setState({...this.state, isFetching: true});
+        const token=localStorage.getItem('token');
+        const bearer= 'Bearer '+token;
+        this.setState({...this.state, token: token ,isFetching: true});
         fetch(baseUrl+'createtest/' +testId, {
             method: "GET",
             headers: {
@@ -298,7 +469,6 @@ class EditTest extends Component {
         else if(this.state.test)
         {
             const test=this.state.test;
-            console.log(this.state.test);
             var questionlist;
             if(test.questions.length)
             {
@@ -306,7 +476,7 @@ class EditTest extends Component {
                     if(question.questionType==='1')
                         return(
                             <Card className="mt-2">
-                                <CardHeader as="h5" style={{backgroundColor:'rgba(0,186,0,0.5)'}}>Question : {index+1}<span style = {{position:'absolute',right:0}}><span  className="fa fa-edit fa-lg mr-5" onClick={(event)=>this.toggleModalEdit(index)}></span><span className="fa fa-trash fa-lg mr-2"onClick={this.handleQuestionDelete}></span></span></CardHeader>
+                                <CardHeader as="h5" style={{backgroundColor:'rgba(0,186,0,0.5)'}}>Question : {index+1}<span style = {{position:'absolute',right:0}}><span  className="fa fa-edit fa-lg mr-5" onClick={()=>this.toggleModalEdit(index)}></span><span className="fa fa-trash fa-lg mr-2"onClick={()=>this.handleQuestionDelete(index)}></span></span></CardHeader>
                                 <CardBody>
                                     <CardTitle>{question.question}</CardTitle>
                                     <CardText>
@@ -324,7 +494,7 @@ class EditTest extends Component {
                     else if(question.questionType==='2'||question.questionType==='3')
                         return(
                             <Card className="mt-2">
-                                <CardHeader as="h5" style={{backgroundColor:'rgba(0,186,0,0.5)'}}>Question : {index+1}<span style = {{position:'absolute',right:0}}><span  className="fa fa-edit fa-lg mr-5" onClick={(event)=>this.toggleModalEdit(index)}></span><span className="fa fa-trash fa-lg mr-2"onClick={this.handleQuestionDelete}></span></span></CardHeader>
+                                <CardHeader as="h5" style={{backgroundColor:'rgba(0,186,0,0.5)'}}>Question : {index+1}<span style = {{position:'absolute',right:0}}><span  className="fa fa-edit fa-lg mr-5" onClick={(event)=>this.toggleModalEdit(index)}></span><span className="fa fa-trash fa-lg mr-2"onClick={()=>this.handleQuestionDelete(index)}></span></span></CardHeader>
                                 <CardBody>
                                     <CardTitle>{question.question}</CardTitle>
                                     <CardText> 
@@ -345,7 +515,26 @@ class EditTest extends Component {
             }
             else
             {
-                questionlist=(<h2>You Don't Have Any questions Yet! Add Some Questions Now!!!</h2>)
+                if(test.isQuestionInPDF)
+                {
+                    questionlist=(<div style={{ width: '100%', height: 'auto' }}>
+                    <AuthIFrame  src = {`${baseUrl}admin/${test._id}/testPaper`}
+                        token={this.state.token}
+                        type="application/pdf" 
+                        frameBorder="3"
+                        scrolling="auto"
+                        height="900px"
+                        width="100%"
+                        title="Testpaper"
+                        />
+                </div>)
+                }
+                else
+                {
+                    questionlist=(<h2>You Don't Have Any questions Yet! Add Some Questions Now!!!</h2>)
+
+                }
+                
             }
 
             var testtype;
@@ -372,6 +561,7 @@ class EditTest extends Component {
                     </Col>
                 </FormGroup></>):(<>
                 </>);
+
             var optionInput=this.state.questionType==='1'?(<><FormGroup row>
                 <Label htmlFor="A" md={2}>A. </Label>
                 <Col md={10}>
@@ -403,18 +593,53 @@ class EditTest extends Component {
                 </Col>
             </FormGroup></>):(<></>);
 
+            var questionInputForm=(<><FormGroup row>
+                <Label htmlFor="question" md={2}>Question. </Label>
+                <Col md={10}>
+                    <Input type="text" id="question" name="question" placeholder="Question" value={this.state.question} onChange={this.handleInputChange} required/>
+                </Col>
+            </FormGroup>
+            {optionInput}
+            <FormGroup row>
+                <Label htmlFor="marks" md={2}>Marks. </Label>
+                <Col md={10}>
+                    <Input type="number" id="marks" name="marks" placeholder="Default is 1" value={this.state.marks} onChange={this.handleInputChange} required />
+                </Col>
+            </FormGroup></>);
+
+            var addChangeButton=test.isQuestionInPDF?(<><Button  onClick={this.toggleModalChangePDF} type="submit" color="primary" >Change PDF</Button></>):(<> <Button  onClick={this.toggleModal1} type="submit" color="primary" >Add</Button></>);
+
+            var changePDFForm=(<> 
+            <FormGroup row>
+                <Label htmlFor="totalQuestions" md={2}>No. of Questions. </Label>
+                <Col md>
+                    <Input type="number" id="totalQuestions" name="totalQuestions" placeholder="Total Number of Questions" value={this.state.totalQuestions} onChange={this.handleInputChange} required/>
+                </Col>
+            </FormGroup>
+            <FormGroup row>
+                <Label htmlFor="totalMarks" md={2}>Total Marks. </Label>
+                <Col md>
+                    <Input type="number" id="totalMarks" name="totalMarks" placeholder="Total Marks" value={this.state.totalMarks} onChange={this.handleInputChange} required/>
+                </Col>
+            </FormGroup>
+            <FormGroup>
+            <input type='file' id="exampleFormControlFile1" name="paper"label="Paper" onChange={this.handleFileChange} required/>
+            </FormGroup>
+           </>);
+
             return (
                 <div className="container">
                     <div className="row row-content">
                         <div className="col-12">
                             <Card className="mt-2">
-                            <CardHeader as="h5" className="bg-warning">Test Details</CardHeader>
+                            <CardHeader as="h5" className="bg-warning">Test Details<span style = {{position:'absolute',right:0}}><span  className="fa fa-edit fa-lg mr-5" onClick={this.toggleModal2}></span><span className="fa fa-trash fa-lg mr-2"onClick={this.handleTestDelete}></span></span></CardHeader>
                                 <CardBody>
                                     <CardTitle>Title: &emsp;{test.title}
                                         <br/>Subject:  &emsp;{test.subject}
                                         <br/>Duration: &emsp;{test.duration} (in min)
                                         <br/>Start Date: &emsp;{moment.utc(test.startDate).local().format('llll')}
                                         <br/>Test Type : &emsp;{testtype}
+                                        <br/>Total Marks : &emsp;{test.totalMarks}
                                     </CardTitle>
                                 </CardBody>
                             </Card>
@@ -428,7 +653,7 @@ class EditTest extends Component {
                                 {/* </ul> */}
                             </CardBody>
                          </Card>
-                            <Button  onClick={this.toggleModal1} type="submit" color="primary" >Add</Button>
+                           {addChangeButton}
                             <Button  onClick={this.toggleModal2} type="submit" color="primary" >Edit Test Details</Button>
                             <Link to={`/admingroups/${this.props.match.params.groupId}`}><Button type="submit" color="success">Finish</Button></Link>
                         </div>
@@ -440,19 +665,7 @@ class EditTest extends Component {
                         <ModalBody >
                             <Form onSubmit={this.handleAddSubmit}>
                                 {questionTypeInput}
-                                <FormGroup row>
-                                    <Label htmlFor="question" md={2}>Question. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="question" name="question" placeholder="Question" value={this.state.question} onChange={this.handleInputChange} required/>
-                                    </Col>
-                                </FormGroup>
-                                {optionInput}
-                                <FormGroup row>
-                                    <Label htmlFor="marks" md={2}>Marks. </Label>
-                                    <Col md={10}>
-                                        <Input type="number" id="marks" name="marks" placeholder="Default is 1" value={this.state.marks} onChange={this.handleInputChange} required />
-                                    </Col>
-                                </FormGroup>
+                                {questionInputForm}
                                 <FormGroup row>
                                     <Button type="submit" color="primary" >Add</Button>
                                 </FormGroup>
@@ -498,48 +711,18 @@ class EditTest extends Component {
                         <ModalHeader toggle={this.toggleModalEdit}><strong>Edit Question</strong></ModalHeader>
                         <ModalBody >
                             <Form onSubmit={this.handleQuestionEdit}>
+                                {questionInputForm}
                                 <FormGroup row>
-                                    <Label htmlFor="question" md={2}>Question. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="question" name="question" placeholder="Question" value={this.state.question} onChange={this.handleInputChange}/>
-                                    </Col>
+                                    <Button type="submit" color="primary" >Save Changes</Button>
                                 </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="A" md={2}>A. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="A" name="A" placeholder="Option A" value={this.state.A} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="B" md={2}>B. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="B" name="B" placeholder="Option B" value={this.state.B} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="C" md={2}>C. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="C" name="C" placeholder="Option C" value={this.state.C} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="D" md={2}>D.</Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="D" name="D" placeholder="Option D" value={this.state.D} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="ans" md={2}>Correct Option. </Label>
-                                    <Col md={10}>
-                                        <Input type="text" id="ans" name="ans" placeholder="e.g. A" value={this.state.ans} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="marks" md={2}>Marks. </Label>
-                                    <Col md={10}>
-                                        <Input type="number" id="marks" name="marks" placeholder="Default is 1" value={this.state.marks} onChange={this.handleInputChange} />
-                                    </Col>
-                                </FormGroup>
+                            </Form> 
+                        </ModalBody>
+                    </Modal>
+                    <Modal className="modal-lg" isOpen={this.state.isModalChangePDFOpen} toggle={this.toggleModalChangePDF}>
+                        <ModalHeader toggle={this.toggleModalChangePDF}><strong>Change PDF</strong></ModalHeader>
+                        <ModalBody >
+                            <Form onSubmit={this.handleChangePDF}>
+                                {changePDFForm}
                                 <FormGroup row>
                                     <Button type="submit" color="primary" >Save Changes</Button>
                                 </FormGroup>

@@ -56,6 +56,8 @@ class CreateTest extends Component {
 
         var formData = new FormData()
         formData.append('file', this.state.selectedFile)
+        formData.append('totalQuestions',this.state.totalQuestions)
+        formData.append('totalMarks',this.state.totalMarks)
 
         const bearer = 'Bearer ' + localStorage.getItem('token');
         const groupID=this.props.match.params.groupId;
@@ -87,8 +89,19 @@ class CreateTest extends Component {
         .then(tests => { console.log('Test Created', tests);
             if(this.state.papersubmit)
             {
-                axios.post(baseUrl+'createtest/'+groupID+'/uploadAssignment/'+tests._id,formData).then(res => console.log(res)).catch(err => console.log(err));
-                this.props.history.push(`/home`);
+                axios({
+                    method: 'post',
+                    url: `${baseUrl}createtest/uploadAssignment/${tests._id}`,
+                    data: formData,
+                    headers: {
+                        Authorization: `${bearer}`
+                    }
+                })
+                .then(res => {
+                    console.log(res)
+                    this.props.history.push(`/home`)}
+                    ).catch(err => console.log(err));
+                
 
             }
             else

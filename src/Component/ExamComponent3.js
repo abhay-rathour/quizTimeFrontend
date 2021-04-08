@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Card, CardBody, CardHeader, CardText, Button} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import {baseUrl} from '../shared/baseUrl';
+import AuthIFrame from './AuthIFrame';
 
 //A component to create exam interface of Assignment type Exam where 
 // student is diplayed pdf of question paper or list of question and he is asked to enter answers
@@ -37,7 +38,8 @@ class Exam3 extends Component {
     this.setState({
       // studentid : param.studentId,
       groupid : param.groupId,
-      testid : param.testId
+      testid : param.testId,
+      token:localStorage.getItem('token')
     })
     const bearer= 'Bearer '+localStorage.getItem('token');
     fetch(baseUrl + 'tests/'+param.groupId+'/start/'+param.testId,{
@@ -242,13 +244,22 @@ class Exam3 extends Component {
           </Card>
           <CardBody>
 		 	      <div style={{ width: '100%', height: 'auto' }}>
-				        <iframe title="examPaper"
+                   <AuthIFrame  src = {this.state.questionsLink}
+                        token={localStorage.getItem('token')}
+                        type="application/pdf" 
+                        frameBorder="3"
+                        scrolling="auto"
+                        height="900px"
+                        width="100%"
+                        title="Testpaper"
+                        />
+                {/* <iframe title="examPaper"
                     src={this.state.questionsLink}
                     frameBorder="3"
                     scrolling="auto"
                     height="900px"
                     width="100%"
-                ></iframe>
+                ></iframe> */}
                 <center>
                   <h4>Solve all the question mentioned in above file and upload the PDF of your assignment. Form will close automatically when time runs out.</h4>
                   <form method='post' encType='multipart/form-data'>

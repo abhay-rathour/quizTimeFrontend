@@ -113,59 +113,9 @@ class Admin extends Component {
 
         return (
             <div className="container mt-5">
-                {/* <Nav tabs>
-                    <NavItem>
-                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>
-                            Tests
-                            </NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggleTab('2'); }}>
-                            Your Group
-                            </NavLink>
-                    </NavItem>
-                    
-                </Nav> */}
+               
                 <TabContent activeTab={this.state.activeTab}>
-                    {/* <TabPane tabId="1">
-                        <Row>
-                            <Col sm="12">
-                            <Table striped bordered hover>
-                                    <thead>
-                                        <tr>
-                                            <th>Test Name</th>
-                                            <th>Attempted By</th>
-                                            <th>Avg Score</th>
-                                            <th>Duration</th>
-                                            <th>Passed</th>
-                                            <th>Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        
-                                        <tr>
-                                            <td><span className="fa fa-file fa-lg"></span>TestA</td>
-                                            <td>30/40</td>
-                                            <td>9.7/11</td>
-                                            <td>00:60:00</td>
-                                            <td>25/40</td>
-                                            <td><Link to="#" ><MDBBtn gradient="aqua" size="sm"> Click </MDBBtn></Link></td>
-                                        </tr>
-                                        <tr>
-                                            <td><span className="fa fa-file fa-lg"></span>TestB</td>
-                                            <td>35/40</td>
-                                            <td>9.0/11</td>
-                                            <td>00:60:00</td>
-                                            <td>27/40</td>
-                                            <td><Link to="/testdetails" ><MDBBtn gradient="aqua" size="sm"> Click </MDBBtn></Link></td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                                
-                            </Col>
-                        </Row>
-    
-                    </TabPane> */}
+                  
                     <TabPane tabId="1">
                         <Row>
                             <Col sm="12">

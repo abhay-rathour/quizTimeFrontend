@@ -2,6 +2,8 @@ import moment from 'moment';
 import React, { Component } from 'react';
 import {  Card, CardHeader, CardBody ,CardTitle,Form,FormGroup,Input,Button,Col,Modal,ModalBody,ModalHeader,Label} from 'reactstrap';
 import {baseUrl} from '../shared/baseUrl';
+import AuthIFrame from './AuthIFrame';
+
 
 
 // Component to display Test type 3 response sheet of  student and option to give marks for  answers and finish evaluation
@@ -15,7 +17,8 @@ class AdminStudentResult3 extends Component {
             isFetching:true,
             questionsLink:undefined,
             isModalOpen: false,
-            questionNumber:0
+            questionNumber:0,
+            token:'',
         }
         this.handleEvaluate=this.handleEvaluate.bind(this);
         this.SubmitEvaluate=this.SubmitEvaluate.bind(this);
@@ -125,8 +128,10 @@ class AdminStudentResult3 extends Component {
     componentDidMount(){
         const testId=this.props.match.params.testId;
         const studentId=this.props.match.params.studentId;
+        const token=localStorage.getItem('token');
         const bearer= 'Bearer '+localStorage.getItem('token');
-        this.setState({...this.state, isFetching: true});
+
+        this.setState({...this.state,token:token, isFetching: true});
         fetch(baseUrl+'admin/'+testId+'/getEvaluationData/'+studentId, {
             method: "GET",
             headers: {
@@ -174,33 +179,32 @@ class AdminStudentResult3 extends Component {
                     questionlist=(<>No Questions</>)
                 }
             }
-            var finishButton=!test.isEvaluated?(<><Button type="submit" className="btn-success" onClick={this.finishEvaluate}>Finish</Button></>):(<></>);
+            var finishButton=!test.isEvaluated?(<><Button type="submit" className="btn-success justify-self-left" onClick={this.finishEvaluate}>Finish</Button></>):(<></>);
 
-            var questionWritten=test.isQuestionInPDF?(<><div style={{ width: '100%', height: 'auto' }}>
-            <iframe title="testpaper"
-            src={`${baseUrl}admin/${this.props.match.params.testId}/testPaper`}
-            frameBorder="3"
-            scrolling="auto"
-            height="900px"
-            width="100%"
-    ></iframe>
-    
-      </div>
-            
-            
+            var questionWritten=test.isQuestionInPDF?(
+            <>
+                <div style={{ width: '100%', height: 'auto' }}>
+                    <AuthIFrame  src = {`${baseUrl}admin/${this.props.match.params.testId}/testPaper`}
+                        token={this.state.token}
+                        type="application/pdf" 
+                        frameBorder="3"
+                        scrolling="auto"
+                        height="900px"
+                        width="100%"
+                        title="Testpaper"
+                        />
+                </div>
             </>):(<>
-            
-            <Card className="mb-5 mt-5 ">
-                <CardHeader className="bg-info text-white text-center">
-                    Marks Obtained: {test.marksObtained} / {test.totalMarks} 
-                </CardHeader>
-                <CardBody>
-                    <ul className="list-unstyled">
-                            {questionlist}
-                    </ul>
-                </CardBody>
-             </Card>
-
+                <Card className="mb-5 mt-5 ">
+                    <CardHeader className="bg-info text-white text-center">
+                        Marks Obtained: {test.marksObtained} / {test.totalMarks} 
+                    </CardHeader>
+                    <CardBody>
+                        <ul className="list-unstyled">
+                                {questionlist}
+                        </ul>
+                    </CardBody>
+                </Card>
             </>);
             var options=[]
                     for(var i=0;i<test.totalQuestions;i++)
@@ -208,59 +212,64 @@ class AdminStudentResult3 extends Component {
                         options.push(<option id={i} value={i}>{i+1}</option>);
                     }
 
-            var questionNumberInput= (<>
+            var questionNumberInput= (
+            <>
             <FormGroup row>
-            <Label htmlFor="testType" md={2}>Question Number </Label>
-            <Col md={10}>
-            <Input type="select" id="questionNumber" name="questionNumber" value={this.state.questionNumber} onChange={this.handleEvaluate} >
-            {options}
-            </Input>
-            </Col>
-    </FormGroup></>);       
+                <Label htmlFor="testType" md={2}>Question Number </Label>
+                <Col md={10}>
+                    <Input type="select" id="questionNumber" name="questionNumber" value={this.state.questionNumber} onChange={this.handleEvaluate} >
+                        {options}
+                    </Input>
+                </Col>
+            </FormGroup>
+            </>);       
             return (
                 <div className="container">
                     <div className="row">
-                    <div className="col-12 justify-content-center">
-                    <Card className="mt-2 mb-2">
-                        <CardHeader as="h5" className="bg-warning">Test Details</CardHeader>
-                        <CardBody>
-                            <CardTitle>Title: &emsp;{test.title}
-                            <br/>Subject:  &emsp;{test.subject}
-                            <br/>Duration: &emsp;{test.duration} (in min)
-                            <br/>Start Date: &emsp;{moment.utc(test.startDate).local().format('llll')}
-                            <br/>Marks Obtained: {test.marksObtained} / {test.totalMarks} 
-                            </CardTitle>
-                        </CardBody>
-                    </Card>
-                    {finishButton}
-                    <Button type="submit" className="btn-success" style = {{position:'absolute',right: 10}}  onClick={this.toggleModal}>Evaluate</Button>
-                    </div>
-                    </div>  
-                    <div className="row">
-                    <div className="col-6 justify-content-center">
-                         {questionWritten}
-                    </div>
-                    <div className="col-6 justify-content-center">
-                    <><div style={{ width: '100%', height: 'auto' }}>
-            <iframe title= "responseSheet"
-            src={`${baseUrl}admin/${this.props.match.params.testId}/testPaper/${this.props.match.params.studentId}`}
-            frameBorder="3"
-            scrolling="auto"
-            height="900px"
-            width="100%"
-            ></iframe>
-    
-      </div>
-            
-            
-            </>
-                    </div>
+                        <div className="col-12 justify-content-center">
+                            <Card className="mt-2 mb-2">
+                                <CardHeader as="h5" className="bg-warning">Test Details</CardHeader>
+                                <CardBody>
+                                    <CardTitle>Title: &emsp;{test.title}
+                                    <br/>Subject:  &emsp;{test.subject}
+                                    <br/>Duration: &emsp;{test.duration} (in min)
+                                    <br/>Start Date: &emsp;{moment.utc(test.startDate).local().format('llll')}
+                                    <br/>Marks Obtained: {test.marksObtained} / {test.totalMarks} 
+                                    </CardTitle>
+                                </CardBody>
+                            </Card>
+                            
+                            
+                        </div>
                     </div> 
-
-
-
-
-
+                    <div className="row ">
+                        <div className="col ">
+                            {finishButton}
+                            </div>
+                            <div className="col ">
+                            <Button type="submit" className=" float-right btn-success"  onClick={this.toggleModal}>Evaluate</Button>
+                        </div>
+                    </div> 
+                    <div className="row">
+                        <div className="col-6 justify-content-center">
+                            {questionWritten}
+                        </div>
+                        <div className="col-6 justify-content-center">
+                            <>
+                            <div style={{ width: '100%', height: 'auto' }}>
+                                <AuthIFrame
+                                    title= "responseSheet"
+                                    src={`${baseUrl}admin/${this.props.match.params.testId}/testPaper/${this.props.match.params.studentId}`}
+                                    frameBorder="3"
+                                    token={this.state.token}
+                                    type="application/pdf"
+                                    scrolling="auto"
+                                    height="900px"
+                                    width="100%"/>
+                            </div>
+                            </>
+                        </div>
+                    </div> 
 
                     <Modal className="modal-lg" isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                         <ModalHeader toggle={this.toggleModal}><strong>Evaluate Question</strong></ModalHeader>
@@ -287,9 +296,7 @@ class AdminStudentResult3 extends Component {
                     </Modal>
                 </div>
             )
-
-        }
-        
+        }  
     }
 }
 export default AdminStudentResult3;

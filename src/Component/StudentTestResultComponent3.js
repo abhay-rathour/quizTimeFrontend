@@ -2,7 +2,8 @@ import moment from 'moment';
 import React, { Component } from 'react';
 import {  Card, CardHeader, CardBody ,CardTitle,CardText,Button} from 'reactstrap';
 import {baseUrl} from '../shared/baseUrl';
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router-dom';
+import AuthIFrame from './AuthIFrame';
 
 // A response sheet display component of test type 1
 
@@ -13,6 +14,7 @@ class StudentResult3 extends Component {
             test:{},
             isFetching:true,
             questionsLink:undefined,
+            token:''
 
         }
     }
@@ -20,7 +22,8 @@ class StudentResult3 extends Component {
     componentDidMount(){
         const testId=this.props.match.params.testId;
         const bearer= 'Bearer '+localStorage.getItem('token');
-        this.setState({...this.state, isFetching: true});
+        const token=localStorage.getItem('token');
+        this.setState({...this.state,token:token, isFetching: true});
         fetch(baseUrl+'student/'+testId+'/getCompletedQuestions/', {
             method: "GET",
             headers: {
@@ -96,13 +99,15 @@ class StudentResult3 extends Component {
 
             var questionWritten=test.isQuestionInPDF?(<>
                 <div style={{ width: '100%', height: 'auto' }}>
-                    <iframe title="testPaper"
-                        src={`${baseUrl}admin/${this.props.match.params.testId}/testPaper`}
+                <AuthIFrame  src = {`${baseUrl}student/${this.props.match.params.testId}/testPaper`}
+                        token={this.state.token}
+                        type="application/pdf" 
                         frameBorder="3"
                         scrolling="auto"
                         height="900px"
                         width="100%"
-                    ></iframe>
+                        title="Testpaper"
+                        />
                 </div>
                 </>):(<>
                 <Card className="mb-5 mt-5 ">
@@ -154,18 +159,20 @@ class StudentResult3 extends Component {
                         <div className="col-6 justify-content-center">
                             <>
                                 <div style={{ width: '100%', height: 'auto' }}>
-                                    <iframe title="studentResponse"
-                                        src={`${baseUrl}admin/${this.props.match.params.testId}/testPaper/${localStorage.getItem('userId')}`}
-                                        frameBorder="3"
-                                        scrolling="auto"
-                                        height="900px"
-                                        width="100%"
-                                    ></iframe>
+                                <AuthIFrame
+                                    title= "responseSheet"
+                                    src={`${baseUrl}student/${this.props.match.params.testId}/testresponse`}
+                                    frameBorder="3"
+                                    token={this.state.token}
+                                    type="application/pdf"
+                                    scrolling="auto"
+                                    height="900px"
+                                    width="100%"/>
                                 </div>
                             </>
                         </div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-5">
                         <div className="col-12">
                             {responselist}
                         </div>
