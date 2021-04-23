@@ -16,12 +16,60 @@ export const receiveLogin = (response,access) => {
     }
 }
   
-export const loginError = (message) => {
+export const loginError = (err) => {
     return {
         type: ActionTypes.LOGIN_FAILURE,
-        message
+        err
     }
 }
+
+// export const loginUser = (creds) => (dispatch) => {
+//     // We dispatch requestLogin to kickoff the call to the API
+//     const access=creds.userType==='admins'?true:false;
+//     dispatch(requestLogin(creds))
+//     const type= access?'/admin':'/user';
+//     return fetch(baseUrl + 'login'+type, {
+//         method: 'POST',
+//         headers: { 
+//             'Content-Type':'application/json' 
+//         },
+//         body: JSON.stringify(creds)
+//     })
+//     .then(response => {
+//         if (response) {
+//              console.log( response);
+//             return response;
+//         } else {
+//             var error = new Error('Error ' + response.status + ': ' + response.statusText);
+//             error.response = response;
+//             throw error;
+//         }
+//         },
+//         error => {
+//             throw error;
+//         })
+//     .then(response => response.json())
+//     .then(response => {
+//         if (response) {
+//             console.log("I am Here");
+//             console.log(response);
+//             console.log(access);
+//             // If login was successful, set the token in local storage
+//             localStorage.setItem('token', response.token);
+//             localStorage.setItem('user', JSON.stringify(response.user));
+//             localStorage.setItem('userId',response.user._id);
+//             localStorage.setItem('isAdmin',access);
+            
+//             dispatch(receiveLogin(response,access));
+//         }
+//         else {
+//             var error = new Error('Error ' + response.status);
+//             error.response = response;
+//             throw error;
+//         }
+//     })
+//     .catch(error => dispatch(loginError(error.message)))
+// };
 
 export const loginUser = (creds) => (dispatch) => {
     // We dispatch requestLogin to kickoff the call to the API
@@ -36,41 +84,33 @@ export const loginUser = (creds) => (dispatch) => {
         body: JSON.stringify(creds)
     })
     .then(response => {
-        if (response) {
-             console.log( response);
-            return response;
-        } else {
-            var error = new Error('Error ' + response.status + ': ' + response.statusText);
-            error.response = response;
-            throw error;
-        }
-        },
-        error => {
-            throw error;
-        })
+            if (response) {
+                //  console.log( response);
+                return response;
+            } 
+            else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+            }
+        },error => { throw error})
     .then(response => response.json())
     .then(response => {
-        if (response) {
-            console.log("I am Here");
-            console.log(response);
-            console.log(access);
+        if (response.success) {
             // If login was successful, set the token in local storage
             localStorage.setItem('token', response.token);
             localStorage.setItem('user', JSON.stringify(response.user));
             localStorage.setItem('userId',response.user._id);
             localStorage.setItem('isAdmin',access);
-            // Dispatch the success action
-            // dispatch(fetchFavorites());
-            
             dispatch(receiveLogin(response,access));
         }
         else {
-            var error = new Error('Error ' + response.status);
-            error.response = response;
+           
+            var error = response.error
             throw error;
         }
     })
-    .catch(error => dispatch(loginError(error.message)))
+    .catch(error => dispatch(loginError(error)))
 };
 
 

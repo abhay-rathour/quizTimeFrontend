@@ -1,8 +1,8 @@
 import React, { Component} from 'react';
 import { connect } from 'react-redux';
-import {  Card, CardBody, CardHeader,Form, FormGroup, Col, Input,Button,Label} from 'reactstrap';
+import {  Card, CardBody, CardHeader,Form, FormGroup,FormFeedback, Col, Input,Button,Label} from 'reactstrap';
 import {loginUser}from '../redux/ActionCreators/LoginActions';
-import {Redirect} from 'react-router-dom'
+import {Redirect, Link} from 'react-router-dom'
 
 const mapDispatchToProps=(dispatch)=>({
     loginUser: (creds) => dispatch(loginUser(creds)),
@@ -12,6 +12,9 @@ const mapStateToProps=state=>({
     auth:state.auth
 
 });
+
+
+
 
 class Login extends Component{
     
@@ -24,6 +27,7 @@ class Login extends Component{
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmitLogin = this.handleSubmitLogin.bind(this);
+        this.validate = this.validate.bind(this);
     };
     
     handleInputChange(event) {
@@ -35,7 +39,23 @@ class Login extends Component{
             [name]: value
         });
     }
-    async handleSubmitLogin(event) {
+    
+validate(err) {
+    const errors = {
+        username:'',
+        password: '',
+    };
+
+    if (err.password)
+        errors.password = err.passMessage;
+    if (err.username)
+        errors.username = err.userMessage;
+    return errors;
+}
+
+
+
+    handleSubmitLogin(event) {
         var user={
             username : this.state.username,
             password: this.state.password,
@@ -57,6 +77,8 @@ class Login extends Component{
             
         }
         else{
+            const errors=this.validate(this.props.auth.err);
+            // console.log(this.props.auth);
             return(
                 <div className='container'>
                     <div className='row justify-content-center'>
@@ -69,8 +91,11 @@ class Login extends Component{
                                         <Col md={10} >
                                             <Input type="text" id="username" name="username"
                                                 placeholder="Username"
-                                                value={this.state.email}
+                                                value={this.state.username}
+                                                valid={errors.username === ''}
+                                                invalid={errors.username !== ''}
                                                 onChange={this.handleInputChange} required />
+                                                <FormFeedback>{errors.username}</FormFeedback>
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
@@ -78,7 +103,10 @@ class Login extends Component{
                                             <Input type="password" id="password" name="password"
                                                 placeholder="Password"
                                                 value={this.state.password}
+                                                valid={errors.password === ''}
+                                                invalid={errors.password !== ''}
                                                 onChange={this.handleInputChange} required />
+                                                <FormFeedback>{errors.password}</FormFeedback>
                                         </Col>
                                     </FormGroup>
                                     <FormGroup check>
@@ -89,6 +117,7 @@ class Login extends Component{
                                                 onChange={this.handleInputChange} /> {' '}
                                             <strong>Administrator Account</strong>
                                         </Label>
+                                       
                                     </FormGroup>
                                     <FormGroup row>
                                         <Col md={{ size: 10 }}>
@@ -97,6 +126,7 @@ class Login extends Component{
                                             </Button>
                                         </Col>
                                     </FormGroup>
+                                    <Link to="/recoverUsernamePassword" >Forgot Password?</Link>
                                 </Form>
                             </CardBody>
                         </Card>

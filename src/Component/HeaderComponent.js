@@ -47,8 +47,8 @@ class NavComp extends Component{
                                 </NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink className="nav-link pink-text" to="#">
-                                    <span className="fa fa-info fa-lg"></span> Details
+                                <NavLink className="nav-link pink-text" to="/accountdetails">
+                                    <span className="fa fa-info fa-lg"></span> Profile
                                 </NavLink>
                             </NavItem>
                         </Nav>
@@ -80,12 +80,12 @@ class NavComp extends Component{
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink className="nav-link pink-text" to="/paper">
-                                        <span className="fa fa-desktop fa-lg"></span> Demo
+                                    <NavLink className="nav-link pink-text" to="/help">
+                                        <span className="fa fa-desktop fa-lg"></span> Help
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink className="nav-link pink-text" to="#">
+                                    <NavLink className="nav-link pink-text" to="/contactus">
                                         <span className="fa fa-address-card fa-lg"></span> Contact Us
                                     </NavLink>
                                 </NavItem>

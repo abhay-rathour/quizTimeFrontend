@@ -30,6 +30,7 @@ class Register extends Component {
             username: '',
             firstname: '',
             lastname: '',
+            organisation: '',
             email: '',
             password: '',
             agree: false,
@@ -38,6 +39,7 @@ class Register extends Component {
                 username: false,
                 firstname: false,
                 lastname: false,
+                organisation:false,
                 password: false,
                 email: false
             }
@@ -99,6 +101,7 @@ class Register extends Component {
             username: this.state.username,
             firstname: this.state.firstname,
             lastname: this.state.lastname,
+            organisation:this.state.organisation,
             password: this.state.password,
             email : this.state.email
         };
@@ -203,11 +206,12 @@ class Register extends Component {
     }
 
     
-    validate(username, firstname, lastname, password, email) {
+    validate(username, firstname, lastname, organisation, password, email) {
         const errors = {
             username:'',
             firstname: '',
             lastname: '',
+            organisation:'',
             password: '',
             email: ''
         };
@@ -224,9 +228,11 @@ class Register extends Component {
 
         if (this.state.touched.lastname && lastname.length < 3)
             errors.lastname = 'Last Name should be >= 3 characters';
+            
         else if (this.state.touched.lastname && lastname.length > 10)
             errors.lastname = 'Last Name should be <= 10 characters';
-
+        if (this.state.touched.organisation && organisation.length < 3)
+            errors.organisation = 'Organisation Name should be >= 3 characters';
         // const reg = /^\d+$/;
         if (this.state.touched.password && password.length < 8)
             errors.password = 'Password should be >= 8 characters';
@@ -242,7 +248,7 @@ class Register extends Component {
     }
 
     render() {
-        const errors = this.validate(this.state.username, this.state.firstname, this.state.lastname, this.state.password, this.state.email);
+        const errors = this.validate(this.state.username, this.state.firstname, this.state.lastname,this.state.organisation, this.state.password, this.state.email);
         return (
             <div className="container">
                 <div className="row justify-content-center">
@@ -309,6 +315,7 @@ class Register extends Component {
                                     <FormFeedback>{errors.lastname}</FormFeedback>
                                 </Col>
                             </FormGroup>
+                            
                             <FormGroup row>
                                 <Col md={10}>
                                 <Input type="email" id="email" name="email"
@@ -321,6 +328,7 @@ class Register extends Component {
                                     <FormFeedback>{errors.email}</FormFeedback>
                                 </Col>
                             </FormGroup>
+                            
                             <FormGroup row>
                                 <Col md={10}>
                                 <Input type="password" id="password" name="password"
@@ -382,6 +390,18 @@ class Register extends Component {
                                         onBlur={this.handleBlur('lastname')}
                                         onChange={this.handleInputChange} />
                                     <FormFeedback>{errors.lastname}</FormFeedback>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup row>
+                                <Col md={10}>
+                                <Input type="organisation" id="organisation" name="organisation"
+                                        placeholder="Organisation"
+                                        value={this.state.organisation}
+                                        valid={errors.organisation === ''}
+                                        invalid={errors.organisation !== ''}
+                                        onBlur={this.handleBlur('organisation')}
+                                        onChange={this.handleInputChange} />
+                                    <FormFeedback>{errors.organisation}</FormFeedback>
                                 </Col>
                             </FormGroup>
                             <FormGroup row>

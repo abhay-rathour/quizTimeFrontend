@@ -13,6 +13,8 @@ import Exam2 from './ExamComponent2';
 import Exam3 from './ExamComponent3';
 import Register from './RegisterComponent';
 import Admin from './AdminComponent';
+import Help from './HelpComponent';
+import Contact from './ContactUsComponent';
 import CreateTest from './CreateTestComponent';
 import EditTest from './EditTestComponent';
 import GroupDetailAdmin from './GroupDetailComponent';
@@ -27,6 +29,8 @@ import StudentResult from './StudentTestResultComponent';
 import StudentResult2 from './StudentTestResultComponent2';
 import StudentResult3 from './StudentTestResultComponent3';
 import AdminSummary from './AdminSummaryComponent';
+import Details from './DetailComponent';
+import Recover from './RecoveryComponent';
 
 //Adding Redux store with Main State
 
@@ -115,8 +119,12 @@ class Main extends Component {
                     <Route path="/home" exact component = {HomePage}/>
                     <Route path="/login" exact component = {Login}/>
                     <Route path="/register" exact component={Register}/>
+                    <Route path="/help" component={Help}/>
+                    <Route path="/contactUs" component={Contact}/>
+                    <Route path="/recoverUsernamePassword" component={Recover}/>
                     <PrivateRoute exact path="/student" component={Student}/> 
                     <PrivateRoute path="/admin" component={Admin}/>
+                    <PrivateRoute path="/accountdetails" component={Details}/>
                     <PrivateRoute path="/exam1/:groupId/:testId" component={Exam}/>
                     <PrivateRoute path="/exam2/:groupId/:testId" component={Exam2}/>
                     <PrivateRoute path="/exam3/:groupId/:testId" component={Exam3}/>

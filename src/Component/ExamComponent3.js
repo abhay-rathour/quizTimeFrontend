@@ -80,8 +80,13 @@ class Exam3 extends Component {
   }
   
   handleFileChange(event){
+    if(!this.state.selectedFile)
+    {
+      this.setState({
+        disabledSubmit:!this.state.disabledSubmit
+      })
+    }
     this.setState({
-      disabledSubmit : !this.state.disabledSubmit,
       selectedFile: event.target.files[0]
     })
     console.log(this.state.selectedFile, event.target.files[0])
