@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Card, CardBody, CardHeader, Form, FormGroup, FormFeedback, Col, Input, Button, Label } from 'reactstrap';
-import { Redirect, Link } from 'react-router-dom'
 import { baseUrl } from '../shared/baseUrl';
 
 

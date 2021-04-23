@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Card, CardBody, CardHeader, Form, FormGroup, FormFeedback, Col, Input, Button, Modal,ModalBody,ModalHeader,Table } from 'reactstrap';
-import { loginUser } from '../redux/ActionCreators/LoginActions';
+
 import {baseUrl} from "../shared/baseUrl"
-import { Redirect } from 'react-router-dom'
 
-const mapDispatchToProps = (dispatch) => ({
-    loginUser: (creds) => dispatch(loginUser(creds)),
 
-});
+
 const mapStateToProps = state => ({
     auth: state.auth
 
@@ -67,7 +64,7 @@ class Details extends Component {
             newpass: '',
             confpass: ''
         };  
-        if(this.state.touched.oldpass&&oldpass=='')
+        if(this.state.touched.oldpass&&oldpass==='')
         {
             errors.oldpass = 'Old password cannot be empty.';
         }
