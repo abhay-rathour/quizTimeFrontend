@@ -78,7 +78,8 @@ class AdminStudentResult extends Component {
                                         <br/>D. &emsp;{question.D}  
                                         <br/><br/>Correct Option. &emsp;{question.ans} 
                                         <br/>Marked option. &emsp;{markedAns[index]}   
-                                        <br/>Marks. &emsp;{question.marks}   
+                                        <br/>Marks. &emsp;{question.marks}
+                                        <br/>Marks Obtained.&emsp;{test.response[index].marks}   
                                 </CardText>    
                             </CardBody>
                          </Card>
@@ -93,6 +94,8 @@ class AdminStudentResult extends Component {
             else{
                 questionlist=(<>Error Occured</>)
             }
+            var neg=test.negative?"Yes":"No";
+            var negP=test.negative?test.negPercentage:0;
             return (
                 <div className="container">
                     <div className="row">
@@ -104,6 +107,8 @@ class AdminStudentResult extends Component {
                                         <br/>Subject:  &emsp;{test.subject}
                                         <br/>Duration: &emsp;{test.duration} (in min)
                                         <br/>Start Date: &emsp;{moment.utc(test.startDate).local().format('llll')}
+                                        <br/> Negative Marking: &emsp;{neg}
+                                        <br/> Negative Percentage: &emsp;{negP}%
                                 </CardTitle>
                             </CardBody>
                          </Card>

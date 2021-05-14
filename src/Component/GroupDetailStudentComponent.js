@@ -68,9 +68,6 @@ class GroupDetailStudent extends Component {
             const tests=this.state.group.tests;
             console.log(tests);
             var testslist;
-            
-            
-
             if(tests.length)
             {  
                 testslist=tests.map((test,index)=>{
@@ -87,6 +84,8 @@ class GroupDetailStudent extends Component {
                         {
                         testtype="Assignment Type"
                         }
+                    var negative=test.negative?"YES":"NO";
+                    var negPercentage=test.negative?test.negPercentage:"0";
                     if(test.isCompleted)
                     {
                         
@@ -97,6 +96,8 @@ class GroupDetailStudent extends Component {
                                 <td>{test.subject}</td>
                                 <td>{test.duration}</td>
                                 <td>{testtype}</td>
+                                <td>{negative}</td>
+                                <td>{negPercentage}</td>
                                 <td>{test.totalMarks}</td>
                                 <td>
                                     <Link to={`/student/result/${test.testType}/${test._id}`} ><Button  color="success" size="sm">Results</Button></Link>
@@ -126,6 +127,8 @@ class GroupDetailStudent extends Component {
                                 <td>{test.subject}</td>
                                 <td>{test.duration}</td>
                                 <td>{testtype}</td>
+                                <td>{negative}</td>
+                                <td>{negPercentage}</td>
                                 <td>{test.totalMarks}</td>
                                 <td>
                                     <Link to = {examlink} ><Button outline color="grey" size="sm">Start Test</Button></Link>
@@ -171,6 +174,8 @@ class GroupDetailStudent extends Component {
                                                     <th>Subject</th>
                                                     <th>Duration(in Minutes)</th>
                                                     <th>Test Type</th>
+                                                    <th>Negative Marking</th>
+                                                    <th>Negative Percentage</th>
                                                     <th>Total Marks</th>
                                                     <th>Start / Result</th>
                                                 </tr>

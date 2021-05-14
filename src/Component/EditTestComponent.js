@@ -18,6 +18,8 @@ class EditTest extends Component {
             subject: '',
             startDate: '',
             question: '',
+            negative:false,
+            negPercentage:0,
             A: '',
             B: '',
             C: '',
@@ -77,6 +79,8 @@ class EditTest extends Component {
                 duration: this.state.test.duration,
                 subject: this.state.test.subject,
                 startDate: date,
+                negative:this.state.test.negative,
+                negPercentage:this.state.test.negPercentage
             });
         }
         
@@ -143,7 +147,17 @@ class EditTest extends Component {
     }
     handleInputChange(event) {
         const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        if(target.type==='select-one'){
+            if(value==='false')
+            {
+                value=false;
+            }
+            else if(value==='true')
+            {
+                value=true;
+            }
+        }
         const name = target.name;
         this.setState({
             [name]: value
@@ -240,6 +254,8 @@ class EditTest extends Component {
             subject:this.state.subject,
             startDate: adjustedDate,
             testType:this.state.test.testType,
+            negative:this.state.negative,
+            negPercentage:this.state.negPercentage,
         };
         const bearer = 'Bearer ' + this.state.token;
   
@@ -438,7 +454,7 @@ class EditTest extends Component {
         })
             .then(response => response.json())
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 this.setState({test: result, isFetching: false})
             })
             .catch(e => {
@@ -454,6 +470,7 @@ class EditTest extends Component {
 
 
     render() {
+        console.log(this.state);
         if(this.state.isFetching)
         {
             return(
@@ -627,6 +644,29 @@ class EditTest extends Component {
             </FormGroup>
            </>);
 
+           var negativemarkingdisplay= test.testType==='1'?(<>
+           <br/>Negative Marking : &emsp;{test.negative?"Yes":"No"}
+           {test.negative?(<><br/>Negative Percentage: {test.negPercentage}</>):(<></>)}
+           </>):(<></>);
+           var negativeform=test.testType==='1'?(<>
+            <FormGroup row>
+                <Label htmlFor="negativeMarking" md={2}>Negative Marking </Label>
+                <Col md={10}>
+                    <Input type="select" id="negative" name="negative" value={this.state.negative} onChange={this.handleInputChange} required >
+                    <option value='false'>No</option>
+                    <option value='true'>Yes</option>
+                    </Input>
+                </Col>
+            </FormGroup>
+</>):(<></>);
+var negativeVal=this.state.negative?(<>
+            <FormGroup row>
+                <Label htmlFor="negativePercentage" md={2}>Negative Percentage </Label>
+                <Col md={10}>
+                    <Input type="number" id="negPercentage" name="negPercentage" placeholder="Negative Percentage( e.g. 25 )" value={this.state.negPercentage} onChange={this.handleInputChange} required />
+                </Col>
+            </FormGroup>
+</>):(<></>)
             return (
                 <div className="container">
                     <div className="row row-content">
@@ -640,6 +680,7 @@ class EditTest extends Component {
                                         <br/>Start Date: &emsp;{moment.utc(test.startDate).local().format('llll')}
                                         <br/>Test Type : &emsp;{testtype}
                                         <br/>Total Marks : &emsp;{test.totalMarks}
+                                        {negativemarkingdisplay}
                                     </CardTitle>
                                 </CardBody>
                             </Card>
@@ -701,6 +742,8 @@ class EditTest extends Component {
                                         <Input type="datetime-local" id="startDate" name="startDate" placeholder="Tentative Start Date" value={this.state.startDate} onChange={this.handleInputChange} required/>
                                     </Col>
                                 </FormGroup>
+                                {negativeform}
+                                {negativeVal}
                                 <FormGroup row>
                                     <Button  type="submit" color="primary">Save Changes</Button>
                                 </FormGroup>

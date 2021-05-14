@@ -14,8 +14,11 @@ class CreateTest extends Component {
             duration: '',
             subject: '',
             startDate: '',
+            startTime:'',
             test: [],
             testType:'1',
+            negative:false,
+            negPercentage:0,
             papersubmit:false,
             selectedFile: null,
             isQuestionInPDF: false,
@@ -31,7 +34,17 @@ class CreateTest extends Component {
     }
     handleInputChange(event) {
         const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        var value = target.type === 'checkbox' ? target.checked : target.value;
+        if(target.type==='select-one'){
+            if(value==='false')
+            {
+                value=false;
+            }
+            else if(value==='true')
+            {
+                value=true;
+            }
+        }
         const name = target.name;
         this.setState({
             [name]: value
@@ -39,9 +52,10 @@ class CreateTest extends Component {
     }
     handleCreateSubmit(event) {
         event.preventDefault();
-        var date=new Date(this.state.startDate);
+        var date=new Date(this.state.startDate+ " "+this.state.startTime);
         var adjustedDate=moment.utc(date).toISOString(true);
         console.log(date);
+        // const neg=this.state.negative==="true"?true:false;
         const testnew = {
 
             title: this.state.title,
@@ -51,7 +65,9 @@ class CreateTest extends Component {
             testType:this.state.testType,
             isQuestionInPDF:this.state.papersubmit,
             totalQuestions:this.state.totalQuestions,
-            totalMarks:this.state.totalMarks
+            totalMarks:this.state.totalMarks,
+            negative:this.state.negative,
+            negPercentage:this.state.negPercentage
         };
 
         var formData = new FormData()
@@ -101,8 +117,6 @@ class CreateTest extends Component {
                     console.log(res)
                     this.props.history.push(`/home`)}
                     ).catch(err => console.log(err));
-                
-
             }
             else
             {
@@ -117,7 +131,7 @@ class CreateTest extends Component {
 
 
     render(){
-
+            console.log(this.state);
             var paper=this.state.testType==='3'?(<>
             <FormGroup check>
                 <Label check>
@@ -152,6 +166,25 @@ class CreateTest extends Component {
                     <Button disabled={(this.state.isTestInitialised)} type="submit" color="primary">Create</Button>
                 </FormGroup>
             </>);
+            var negativeform=this.state.testType==='1'?(<>
+                                <FormGroup row>
+                                    <Label htmlFor="negativeMarking" md={2}>Negative Marking </Label>
+                                    <Col md={10}>
+                                        <Input type="select" id="negative" name="negative" value={this.state.negative} onChange={this.handleInputChange} required >
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                        </Input>
+                                    </Col>
+                                </FormGroup>
+            </>):(<></>);
+            var negativeVal=this.state.negative?(<>
+                                <FormGroup row>
+                                    <Label htmlFor="negativePercentage" md={2}>Negative Percentage </Label>
+                                    <Col md={10}>
+                                        <Input type="number" id="negPercentage" name="negPercentage" placeholder="Negative Percentage( e.g. 25 )" value={this.state.negPercentage} onChange={this.handleInputChange} required />
+                                    </Col>
+                                </FormGroup>
+            </>):(<></>)
             return(
                 <div className="container">
                     <div className="row row-content">
@@ -177,8 +210,14 @@ class CreateTest extends Component {
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="startDate" md={2}>Tentative Test Date </Label>
-                                    <Col md={10}>
+                                    {/* <Col md={10}>
                                         <Input type="datetime-local" id="startDate" name="startDate" placeholder="Tentative Start Date" value={this.state.startDate} onChange={this.handleInputChange}required />
+                                    </Col>  */}
+                                    <Col md={5}>
+                                        <Input type="date" id="startDate" name="startDate" placeholder="Start Date" value={this.state.startDate} onChange={this.handleInputChange}required />
+                                    </Col>
+                                    <Col md={5}>
+                                        <Input type="time" id="startTime" name="startTime" placeholder="Start Time" value={this.state.startTime} onChange={this.handleInputChange}required />
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
@@ -191,6 +230,8 @@ class CreateTest extends Component {
                                         </Input>
                                     </Col>
                                 </FormGroup>
+                                {negativeform}
+                                {negativeVal}
                                 {paper}
                                 {fileupload}
                             </Form>

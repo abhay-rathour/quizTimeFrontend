@@ -279,7 +279,8 @@ class GroupDetailAdmin extends Component {
                         {
                         testtype="Assignment Type"
                         }
-                    
+                    var negative=test.negative?"YES":"NO";
+                    var negPercentage=test.negative?test.negPercentage:"0";
                     return(
                         <tr>
                             <td><span className="fa fa-file fa-lg"></span>{test.title}</td>
@@ -288,6 +289,8 @@ class GroupDetailAdmin extends Component {
                             <td>{test.subject}</td>
                             <td>{test.duration}</td>
                             <td>{testtype}</td>
+                            <td>{negative}</td>
+                            <td>{negPercentage}</td>
                             <td>{test.totalMarks}</td>
                             <td>
                                 <Link to={`/edittest/${group._id}/${test._id}`} ><Button outline color="info" size="sm">Edit</Button></Link>
@@ -385,6 +388,8 @@ class GroupDetailAdmin extends Component {
                                                     <th>Subject</th>
                                                     <th>Max.Duration(in Min)</th>
                                                     <th>Test Type</th>
+                                                    <th>Negative Mark.</th>
+                                                    <th>Neg. Percentage</th>
                                                     <th>Max.Score</th>
                                                     <th>Preview</th>
                                                     <th>Summary</th>

@@ -14,12 +14,55 @@ class AdminSummary extends Component {
             isFetching:'false',
             group:null,
         };
-
+        this.downloadfile=this.downloadfile.bind(this);
     }
+
+    downloadfile(){
+        const bearer= 'Bearer '+localStorage.getItem('token');
+        const testid=this.props.match.params.testId;
+        fetch(baseUrl+'admin/resultDownload/'+testid, {
+            method: "GET",
+            headers: {
+              "Content-Type": "text/csv",
+              'Authorization': bearer
+            },
+            credentials: "same-origin"
+        }).then(response=>response.blob())
+        .then(blob=>{
+            const link =document.createElement('a');
+            link.href=URL.createObjectURL(blob);
+            link.download=`Result-${this.props.match.params.testId}.csv`;
+            link.click(); 
+        })
+            .catch(e => {
+                console.log(e);
+            });
+
+        // const link =document.createElement('a');
+        // link.href='data:text/csv,'+encodeURIComponent(csv);
+        // link.download=`Result-${this.props.match.params.testId}.csv`;
+        // link.click();
+    }
+
     componentDidMount(){
         const bearer= 'Bearer '+localStorage.getItem('token');
         const testid=this.props.match.params.testId;
         this.setState({...this.state, isFetching: true});
+        // fetch(baseUrl+'admin/resultDownload/'+testid, {
+        //     method: "GET",
+        //     headers: {
+        //       "Content-Type": "text/csv",
+        //       'Authorization': bearer
+        //     },
+        //     credentials: "same-origin"
+        // })
+		// 	.then(response => response.blob())
+		// 	.then(response => {
+		// 		var blob = new Blob([response], { type })
+		// 		const obj = URL.createObjectURL(blob)
+		// 		this.setState({ blobObject: obj })
+		// 	})
+		// 	.catch(e => console.error("Error", e))
         fetch(baseUrl+'admin/results/'+testid, {
             method: "GET",
             headers: {
@@ -59,8 +102,11 @@ class AdminSummary extends Component {
                             <td>{index+1}</td>
                             <td>{user.name}</td>
                             <td>{user.uniqueID}</td>
-                            <td>{user.marks}</td>
                             <td>{user.totalMarks}</td>
+                            <td>{user.posMarks}</td>
+                            <td>{user.negMarks}</td>
+                            <td>{user.marks}</td>
+                            
                             <td>
                                 <Link to={`/adminresult/${this.props.match.params.testType}/${this.props.match.params.testId}/${user.userID}`} ><Button color="yellow" size="sm">See Responses</Button></Link>
                             </td>
@@ -76,14 +122,17 @@ class AdminSummary extends Component {
             }
             return (
                     <div className="container mt-5">
+                        <Button color="yellow" size="sm" onClick={this.downloadfile}> Download Sheet</Button>
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
                                     <th>S. No.</th>
                                     <th>Name</th>
                                     <th>Unique Id</th>
+                                    <th>Maximum Marks</th>
+                                    <th>Positive Marks</th>
+                                    <th>Negative Marks</th>
                                     <th>Marks</th>
-                                    <th>Total Marks</th>
                                     <th>Responses</th>
                                 </tr>
                             </thead>
